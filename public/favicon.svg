@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none">
+  <!-- Background rounded rectangle -->
+  <rect width="48" height="48" rx="12" fill="#6366F1"/>
+
+  <!-- Terminal prompt ">" -->
+  <path d="M13 16l8 8-8 8" stroke="white" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Cursor underscore "_" -->
+  <path d="M25 32h10" stroke="white" stroke-width="3.5" stroke-linecap="round"/>
+</svg>

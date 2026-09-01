@@ -1,0 +1,214 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500&family=Noto+Sans+KR:wght@400;500;600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #faf9f5; color: #141413; font-family: "Pretendard Variable", Pretendard, Inter, "Noto Sans KR", -apple-system, sans-serif; font-size: 14px; line-height: 1.55; -webkit-font-smoothing: antialiased; }
+    a { color: #994d35; text-decoration: none; } a:hover { text-decoration: underline; }
+    .i { width: 16px; height: 16px; flex: none; }
+    .mono { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+    button { font: inherit; cursor: pointer; }
+    ul { margin: 0; padding-left: 18px; }
+    .mk { background: #f6e7d3; color: #8a5a1f; border-radius: 4px; padding: 1px 5px; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+    .del { background: #f4e3e0; color: #a53a3a; text-decoration: line-through; border-radius: 3px; padding: 0 2px; }
+    .add { background: #e4f0e3; color: #27693b; font-weight: 500; border-radius: 3px; padding: 0 2px; }
+    .code { margin: 8px 0 0; padding: 12px 14px; border-radius: 8px; background: #181715; color: #faf9f5; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 13px; line-height: 1.6; white-space: pre-wrap; }
+    .code .mk { background: rgba(232, 165, 90, 0.28); color: #f6e7d3; }
+    .doc { font-size: 16px; line-height: 1.7; color: #3d3d3a; }
+    .h2 { margin: 0; font-size: 16px; font-weight: 500; line-height: 1.4; color: #141413; }
+    .req { font-size: 12px; font-weight: 500; color: #6c6a64; margin-left: 6px; }
+    .kicker { font-size: 12px; font-weight: 500; letter-spacing: 0.5px; color: #6c6a64; }
+  </style>
+</helmet>
+<div style="display: flex; flex-direction: column; width: 1440px; height: 1560px; overflow: hidden; background: #faf9f5;">
+  <div style="display: flex; align-items: center; gap: 20px; height: 56px; padding: 0 24px; border-bottom: 1px solid #e6dfd8; background: #faf9f5; flex: none;">
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <span style="width: 8px; height: 8px; border-radius: 9999px; background: #cc785c;"></span>
+      <span style="font-size: 15px; font-weight: 600; color: #141413;">Navi</span>
+    </div>
+    <span style="width: 1px; height: 20px; background: #e6dfd8;"></span>
+    <div style="display: flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 500;">
+      <span style="color: #6c6a64;">업무 보드</span>
+      <svg class="i" style="width: 14px; height: 14px; color: #6c6a64;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+      <span style="color: #141413;">생일 유저 적립금 자동 발급 배치</span>
+    </div>
+    <div style="flex: 1;"></div>
+    <button type="button" style="display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 14px 0 12px; border: 1px solid #e6dfd8; border-radius: 8px; background: #faf9f5; color: #141413; font-size: 14px; font-weight: 500;"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg><span>분석 다시 실행</span></button>
+    <button type="button" style="display: inline-flex; align-items: center; height: 36px; padding: 0 12px; border: 1px solid #e6dfd8; border-radius: 8px; background: #faf9f5; color: #141413; font-size: 14px; font-weight: 500;">활동 (3)</button>
+  </div>
+  <div style="display: flex; flex: 1; min-height: 0;">
+    <div style="display: flex; flex-direction: column; flex: 1; min-width: 0; padding: 32px 40px; overflow: hidden;">
+      <div style="display: flex; flex-direction: column; gap: 28px; width: 100%; max-width: 760px;">
+        <div style="display: flex; flex-direction: column; gap: 14px;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="display: inline-flex; align-items: center; gap: 6px; height: 24px; padding: 0 10px 0 8px; border-radius: 9999px; background: #efe9de; color: #141413; font-size: 12px; font-weight: 500;">
+              <svg class="i" style="width: 14px; height: 14px; color: #6c6a64;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><line x1="10" x2="14" y1="2" y2="2"/><line x1="12" x2="15" y1="14" y2="11"/><circle cx="12" cy="14" r="8"/></svg>
+              <span>자동화·배치</span>
+            </span>
+            <span style="display: inline-flex; align-items: center; height: 24px; padding: 0 10px; border-radius: 9999px; background: #efe9de; color: #6c6a64; font-size: 12px; font-weight: 500;">Backlog</span>
+          </div>
+          <h1 style="margin: 0; font-family: 'Noto Serif KR', 'Tiempos Headline', Georgia, serif; font-size: 28px; font-weight: 400; line-height: 1.25; letter-spacing: -0.3px; color: #141413;">생일 유저 적립금 자동 발급 배치</h1>
+          <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px; font-size: 13px; font-weight: 500; color: #6c6a64;">
+            <span class="mono" style="font-size: 12px;">v3</span>
+            <span style="color: #e6dfd8;">|</span>
+            <span style="display: inline-flex; align-items: center; gap: 6px;"><span style="display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 9999px; background: #efe9de; color: #3d3d3a; font-size: 11px; font-weight: 600;">JH</span><span>담당 JH</span></span>
+            <span style="color: #e6dfd8;">|</span>
+            <span>마감일 <span style="color: #141413;">10월 1일</span></span>
+            <span>우선순위 <span style="color: #141413;">보통</span></span>
+            <span>태그 <span style="color: #141413;">적립금</span></span>
+            <span style="color: #e6dfd8;">|</span>
+            <span>2시간 전 수정</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 18px; padding: 12px 14px; border: 1px solid #e6dfd8; border-radius: 12px; background: #faf9f5;">
+            <span class="kicker">개발 준비 게이트</span>
+            <span style="display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 500; color: #27693b;"><svg class="i" style="width: 15px; height: 15px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg><span>예제 마커 0건</span></span>
+            <span style="display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 500; color: #27693b;"><svg class="i" style="width: 15px; height: 15px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg><span>분석 실행됨</span></span>
+            <span style="display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 500; color: #6c6a64;"><svg class="i" style="width: 15px; height: 15px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><circle cx="12" cy="12" r="10"/></svg><span>미결정 2건 남음</span></span>
+          </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 24px;">
+          <section style="display: flex; flex-direction: column; gap: 8px;">
+            <h2 class="h2">정책</h2>
+            <ul class="doc"><li>생일인 유저에게 적립금 5,000원 발급</li><li>적립금 유효기간 30일 (발급일 포함)</li></ul>
+          </section>
+          <section style="display: flex; flex-direction: column; gap: 8px;">
+            <h2 class="h2">배치 주기</h2>
+            <ul class="doc"><li>매일 09:00 (KST) — 당일 생일인 유저 대상</li><li>실패 시 10분 간격으로 최대 3회 재시도</li></ul>
+          </section>
+          <section style="display: flex; flex-direction: column; gap: 8px;">
+            <h2 class="h2">세부사항 <span class="req">필수</span></h2>
+            <ul class="doc"><li>발송 채널 — 알림톡, 실패 시 LMS 대체 발송</li><li>실행 결과 리포트 — 슬랙 #navi-batch 채널에 발송 건수 게시</li></ul>
+            <div style="margin-top: 4px; font-size: 15px; font-weight: 500; color: #141413;">알림톡 템플릿</div>
+            <div class="code">[핏펫] #{고객명}님, 생일 축하드립니다.
+생일 적립금 5,000원이 지급되었습니다. 30일 안에 사용해 주세요.</div>
+          </section>
+
+          <section style="display: flex; flex-direction: column; gap: 10px;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <h2 class="h2">예외 조건 <span class="req">필수</span></h2>
+              <span style="display: inline-flex; align-items: center; gap: 6px; height: 22px; padding: 0 9px 0 8px; border-radius: 9999px; background: #efe9de; color: #141413; font-size: 12px; font-weight: 500;"><span style="width: 6px; height: 6px; border-radius: 9999px; background: #cc785c;"></span><span>제안 대기 1</span></span>
+            </div>
+            <div style="display: flex; flex-direction: column; border: 1px solid #cc785c; border-radius: 12px; overflow: hidden; background: #faf9f5;">
+              <div style="display: flex; align-items: flex-start; gap: 8px; padding: 10px 14px; background: #f5ece6;">
+                <span style="width: 8px; height: 8px; margin-top: 6px; border-radius: 9999px; background: #cc785c; flex: none;"></span>
+                <span style="font-size: 13px; font-weight: 500; color: #994d35; flex: none;">Navi 제안</span>
+                <span style="font-size: 13px; line-height: 1.5; color: #3d3d3a;">마케팅 미동의 유저의 적립금 처리를 분명히 하고, 개발자가 자주 되묻는 엣지케이스 두 건을 보탰어요.</span>
+              </div>
+              <ul class="doc" style="padding: 12px 14px 12px 32px;">
+                <li>마케팅 수신 동의를 하지 않은 유저에게는 알림톡을 보내지 <span class="del">않는다</span> <span class="add">않고, 적립금만 발급한다</span></li>
+                <li>이미 발급받은 유저에게 중복 발급하지 않는다</li>
+                <li><span class="add">생일이 2월 29일인 유저는 평년에 3월 1일로 처리한다</span></li>
+                <li><span class="add">탈퇴·휴면 계정은 발급 대상에서 제외한다</span></li>
+              </ul>
+              <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; border-top: 1px solid #ebe6df;">
+                <span style="font-size: 12px; color: #6c6a64;">수락하면 이 섹션만 교체되고 v4로 저장됩니다</span>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <button type="button" style="display: inline-flex; align-items: center; height: 36px; padding: 0 12px; border: 0; border-radius: 8px; background: transparent; color: #a53a3a; font-size: 14px; font-weight: 500;">거부</button>
+                  <button type="button" style="display: inline-flex; align-items: center; height: 36px; padding: 0 14px; border: 0; border-radius: 8px; background: #cc785c; color: #ffffff; font-size: 14px; font-weight: 600;">수락</button>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <section style="display: flex; flex-direction: column; gap: 10px;">
+          <div style="display: flex; align-items: center; justify-content: space-between;">
+            <h2 class="h2">미결정 사항</h2>
+            <span style="font-size: 13px; font-weight: 500; color: #6c6a64;">답변 2 · 남음 2</span>
+          </div>
+          <div style="display: flex; flex-direction: column; border: 1px solid #e6dfd8; border-radius: 12px; overflow: hidden;">
+            <div style="display: flex; align-items: flex-start; gap: 12px; padding: 12px 14px; border-bottom: 1px solid #ebe6df;">
+              <span style="display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; margin-top: 2px; border-radius: 4px; background: #141413; color: #faf9f5; flex: none;"><svg class="i" style="width: 12px; height: 12px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+              <div style="display: flex; flex-direction: column; gap: 2px;"><div style="font-size: 14px; font-weight: 500; color: #252523;">적립금 유효기간은 며칠인가요?</div><div style="font-size: 13px; color: #6c6a64;">답변 · 30일, 발급일 포함 (정책 섹션에 반영됨)</div></div>
+            </div>
+            <div style="display: flex; align-items: flex-start; gap: 12px; padding: 12px 14px; border-bottom: 1px solid #ebe6df;">
+              <span style="display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; margin-top: 2px; border-radius: 4px; background: #141413; color: #faf9f5; flex: none;"><svg class="i" style="width: 12px; height: 12px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+              <div style="display: flex; flex-direction: column; gap: 2px;"><div style="font-size: 14px; font-weight: 500; color: #252523;">배치 실패 시 재시도 정책은?</div><div style="font-size: 13px; color: #6c6a64;">답변 · 10분 간격 최대 3회 (배치 주기 섹션에 반영됨)</div></div>
+            </div>
+            <div style="display: flex; align-items: flex-start; gap: 12px; padding: 12px 14px; border-bottom: 1px solid #ebe6df; background: #f5f0e8;">
+              <span style="display: inline-flex; width: 18px; height: 18px; margin-top: 2px; border-radius: 4px; border: 1px solid #cfc6bb; background: #faf9f5; flex: none;"></span>
+              <div style="display: flex; flex-direction: column; gap: 10px; flex: 1;">
+                <div style="font-size: 14px; font-weight: 500; color: #252523;">알림톡 발송 실패 시 LMS 대체 발송 비용은 누가 승인하나요?</div>
+                <div style="display: flex; align-items: center; height: 36px; padding: 0 12px; border: 1px solid #cc785c; border-radius: 8px; background: #faf9f5; box-shadow: 0 0 0 3px #f5ece6; font-size: 14px; color: #141413;">마케팅팀 월 예산 안에서 자동 승인, 초과 시 발송 중단</div>
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                  <button type="button" style="display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 8px; border: 0; border-radius: 8px; background: transparent; color: #6c6a64; font-size: 13px; font-weight: 500;"><span style="width: 6px; height: 6px; border-radius: 9999px; background: #cc785c;"></span><span>Navi에게 문서 반영 요청</span></button>
+                  <div style="display: flex; align-items: center; gap: 8px;">
+                    <button type="button" style="display: inline-flex; align-items: center; height: 36px; padding: 0 12px; border: 0; border-radius: 8px; background: transparent; color: #3d3d3a; font-size: 14px; font-weight: 500;">취소</button>
+                    <button type="button" style="display: inline-flex; align-items: center; height: 36px; padding: 0 14px; border: 1px solid #e6dfd8; border-radius: 8px; background: #faf9f5; color: #141413; font-size: 14px; font-weight: 500;">답변 완료</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div style="display: flex; align-items: flex-start; gap: 12px; padding: 12px 14px;">
+              <span style="display: inline-flex; width: 18px; height: 18px; margin-top: 2px; border-radius: 4px; border: 1px solid #cfc6bb; background: #faf9f5; flex: none;"></span>
+              <div style="font-size: 14px; font-weight: 500; color: #252523;">배치 결과 리포트에 실패 건 상세(유저 ID)를 포함하나요?</div>
+            </div>
+          </div>
+        </section>
+
+        <section style="display: flex; flex-direction: column; gap: 8px;">
+          <div class="kicker">활동</div>
+          <div style="display: flex; flex-direction: column; gap: 6px; font-size: 13px; line-height: 1.5; color: #3d3d3a;">
+            <div style="display: flex; align-items: baseline; gap: 12px;"><span style="width: 64px; flex: none; color: #6c6a64;">2시간 전</span><span><strong style="font-weight: 500; color: #141413;">Navi 수정</strong>(정책 — 유효기간 명시) → <strong style="font-weight: 500; color: #141413;">사용자 승인</strong></span><span class="mono" style="font-size: 12px; color: #6c6a64;">v3</span></div>
+            <div style="display: flex; align-items: baseline; gap: 12px;"><span style="width: 64px; flex: none; color: #6c6a64;">어제</span><span>분석 실행 — 미결정 4건 추출</span><span class="mono" style="font-size: 12px; color: #6c6a64;">v2</span></div>
+            <div style="display: flex; align-items: baseline; gap: 12px;"><span style="width: 64px; flex: none; color: #6c6a64;">어제</span><span>태스크 생성 (자동화·배치 템플릿)</span><span class="mono" style="font-size: 12px; color: #6c6a64;">v1</span></div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; width: 400px; flex: none; background: #f5f0e8; border-left: 1px solid #e6dfd8;">
+      <div style="display: flex; align-items: center; gap: 8px; height: 48px; padding: 0 16px; border-bottom: 1px solid #e6dfd8; flex: none;">
+        <span style="width: 8px; height: 8px; border-radius: 9999px; background: #cc785c;"></span>
+        <span style="font-size: 14px; font-weight: 500; color: #141413;">Navi</span>
+        <span style="font-size: 12px; color: #6c6a64;">요구사항 코칭</span>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 12px; flex: 1; min-height: 0; padding: 16px; overflow: hidden;">
+        <div style="max-width: 320px; padding: 10px 14px; background: #faf9f5; border-radius: 12px; font-size: 14px; line-height: 1.6; color: #3d3d3a;">문서를 고치고 싶은 내용을 말해주세요. 저는 직접 수정하지 않고 변경안을 만들어 보여드려요. 수락하면 그때 문서에 반영돼요.</div>
+        <div style="display: flex; flex-direction: column; gap: 6px; padding: 10px 12px; background: #faf9f5; border: 1px solid #e6dfd8; border-radius: 12px;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="width: 8px; height: 8px; border-radius: 9999px; background: #8e8b82; flex: none;"></span>
+            <span style="font-size: 13px; font-weight: 500; color: #6c6a64;">Navi 제안</span>
+            <span class="mono" style="font-size: 12px; color: #6c6a64;">정책</span>
+            <span style="flex: 1;"></span>
+            <span style="display: inline-flex; align-items: center; gap: 4px; height: 22px; padding: 0 8px 0 6px; border-radius: 9999px; background: #efe9de; color: #141413; font-size: 12px; font-weight: 500;"><svg class="i" style="width: 12px; height: 12px; color: #27693b;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg><span>적용됨 · v3</span></span>
+          </div>
+          <div style="font-size: 13px; line-height: 1.5; color: #6c6a64;">유효기간이 없어서 30일을 명시했어요.</div>
+        </div>
+        <div style="display: flex; justify-content: flex-end;"><div style="max-width: 300px; padding: 10px 14px; background: #efe9de; border-radius: 12px; font-size: 14px; line-height: 1.5; color: #141413;">예외 조건에 빠진 엣지케이스를 추가해줘</div></div>
+        <div style="padding: 0 4px; font-size: 14px; line-height: 1.55; color: #3d3d3a;">예외 조건에 세 가지를 보탰어요 — 마케팅 미동의 유저의 적립금 처리, 2월 29일 생일, 탈퇴·휴면 계정이에요. 문서에서 바로 확인하고 수락해 주세요.</div>
+        <div style="display: flex; flex-direction: column; gap: 8px; padding: 12px; background: #faf9f5; border: 1px solid #e6dfd8; border-radius: 12px;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="width: 8px; height: 8px; border-radius: 9999px; background: #cc785c; flex: none;"></span>
+            <span style="font-size: 13px; font-weight: 500; color: #994d35;">Navi 제안</span>
+            <span class="mono" style="font-size: 12px; color: #6c6a64;">예외 조건</span>
+          </div>
+          <div style="font-size: 13px; line-height: 1.5; color: #3d3d3a;">마케팅 미동의 유저의 적립금 처리를 분명히 하고, 엣지케이스 두 건을 보탰어요.</div>
+          <a href="#" style="display: inline-flex; align-items: center; gap: 4px; font-size: 13px; font-weight: 500; color: #994d35;"><span>문서에서 보기</span><svg class="i" style="width: 13px; height: 13px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+        </div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 8px; padding: 8px 16px 16px; flex: none;">
+        <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+          <span style="display: inline-flex; align-items: center; height: 32px; padding: 0 12px; border-radius: 9999px; border: 1px solid #e6dfd8; background: #faf9f5; font-size: 12px; font-weight: 500; color: #3d3d3a;">예외 조건에 빠진 엣지케이스를 추가해줘</span>
+          <span style="display: inline-flex; align-items: center; height: 32px; padding: 0 12px; border-radius: 9999px; border: 1px solid #e6dfd8; background: #faf9f5; font-size: 12px; font-weight: 500; color: #3d3d3a;">세부사항을 항목 — 값 형태로 정리해줘</span>
+          <span style="display: inline-flex; align-items: center; height: 32px; padding: 0 12px; border-radius: 9999px; border: 1px solid #e6dfd8; background: #faf9f5; font-size: 12px; font-weight: 500; color: #3d3d3a;">알림톡 문구를 다듬어줘</span>
+        </div>
+        <div style="display: flex; align-items: flex-end; gap: 8px; padding: 10px 10px 10px 14px; background: #faf9f5; border: 1px solid #e6dfd8; border-radius: 12px;">
+          <span style="flex: 1; padding: 4px 0; font-size: 14px; line-height: 1.45; color: #8e8b82;">문서를 어떻게 고칠까요?</span>
+          <span style="display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 9999px; background: #efe9de; color: #8e8b82; flex: none;"><svg class="i" style="width: 14px; height: 14px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 7-7 7 7"/><path d="M12 19V5"/></svg></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+</body>
+</html>

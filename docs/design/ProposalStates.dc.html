@@ -1,0 +1,169 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500&family=Noto+Sans+KR:wght@400;500;600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #faf9f5; color: #141413; font-family: "Pretendard Variable", Pretendard, Inter, "Noto Sans KR", -apple-system, sans-serif; font-size: 14px; line-height: 1.55; -webkit-font-smoothing: antialiased; }
+    a { color: #994d35; text-decoration: none; } a:hover { text-decoration: underline; }
+    .i { width: 16px; height: 16px; flex: none; }
+    .mono { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+    button { font: inherit; cursor: pointer; }
+    ul { margin: 0; padding-left: 18px; }
+    .mk { background: #f6e7d3; color: #8a5a1f; border-radius: 4px; padding: 1px 5px; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+    .del { background: #f4e3e0; color: #a53a3a; text-decoration: line-through; border-radius: 3px; padding: 0 2px; }
+    .add { background: #e4f0e3; color: #27693b; font-weight: 500; border-radius: 3px; padding: 0 2px; }
+    .code { margin: 8px 0 0; padding: 12px 14px; border-radius: 8px; background: #181715; color: #faf9f5; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 13px; line-height: 1.6; white-space: pre-wrap; }
+    .code .mk { background: rgba(232, 165, 90, 0.28); color: #f6e7d3; }
+    .doc { font-size: 16px; line-height: 1.7; color: #3d3d3a; }
+    .h2 { margin: 0; font-size: 16px; font-weight: 500; line-height: 1.4; color: #141413; }
+    .req { font-size: 12px; font-weight: 500; color: #6c6a64; margin-left: 6px; }
+    .kicker { font-size: 12px; font-weight: 500; letter-spacing: 0.5px; color: #6c6a64; }
+  </style>
+</helmet>
+<div style="display: flex; flex-direction: column; gap: 36px; width: 840px; height: 1620px; padding: 40px; overflow: hidden; background: #faf9f5;">
+
+  <div style="display: flex; flex-direction: column; gap: 12px;">
+    <div class="kicker">상태 1 · 분석 실행 중 — 상단바 우측 + 게이트 스트립</div>
+    <div style="display: flex; align-items: center; justify-content: flex-end; gap: 8px;">
+      <button type="button" disabled="disabled" style="display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 14px 0 12px; border: 0; border-radius: 8px; background: #e6dfd8; color: #6c6a64; font-size: 14px; font-weight: 600; cursor: default;"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg><span>분석 중…</span></button>
+    </div>
+    <div style="display: flex; align-items: center; gap: 18px; padding: 12px 14px; border: 1px solid #e6dfd8; border-radius: 12px; background: #faf9f5;">
+      <span class="kicker">개발 준비 게이트</span>
+            <span style="display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 500; color: #27693b;"><svg class="i" style="width: 15px; height: 15px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg><span>예제 마커 0건</span></span>
+      <span style="display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 500; color: #6c6a64;"><svg class="i" style="width: 15px; height: 15px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg><span>분석 실행 중 — 미결정 사항을 추출하고 있습니다</span></span>
+    </div>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 12px;">
+    <div class="kicker">상태 2 · 거부 클릭 → 사유 입력 (문서의 대상 섹션 안 · 단어 단위 diff)</div>
+    <div style="display: flex; flex-direction: column; border: 1px solid #cc785c; border-radius: 12px; overflow: hidden; background: #faf9f5;">
+      <div style="display: flex; align-items: flex-start; gap: 8px; padding: 10px 14px; background: #f5ece6;">
+        <span style="width: 8px; height: 8px; margin-top: 6px; border-radius: 9999px; background: #cc785c; flex: none;"></span>
+        <span style="font-size: 13px; font-weight: 500; color: #994d35; flex: none;">Navi 제안</span>
+        <span style="font-size: 13px; line-height: 1.5; color: #3d3d3a;">마케팅 미동의 유저의 적립금 처리를 분명히 하고, 엣지케이스 두 건을 보탰어요.</span>
+      </div>
+      <ul class="doc" style="padding: 12px 14px 12px 32px;">
+        <li>마케팅 수신 동의를 하지 않은 유저에게는 알림톡을 보내지 <span class="del">않는다</span> <span class="add">않고, 적립금만 발급한다</span></li>
+        <li>이미 발급받은 유저에게 중복 발급하지 않는다</li>
+        <li><span class="add">생일이 2월 29일인 유저는 평년에 3월 1일로 처리한다</span></li>
+        <li><span class="add">탈퇴·휴면 계정은 발급 대상에서 제외한다</span></li>
+      </ul>
+      <div style="display: flex; flex-direction: column; gap: 10px; padding: 12px 14px; border-top: 1px solid #ebe6df; background: #f5f0e8;">
+        <div style="font-size: 13px; font-weight: 500; color: #141413;">거부 사유 — 적으면 반영해 다시 제안합니다</div>
+        <div style="display: flex; align-items: flex-start; min-height: 64px; padding: 8px 12px; border: 1px solid #cc785c; border-radius: 8px; background: #faf9f5; box-shadow: 0 0 0 3px #f5ece6; font-size: 14px; line-height: 1.5; color: #141413;">2월 29일 처리는 정책팀 확정 전이라 빼주세요. 탈퇴 계정은 제외가 맞지만 휴면 계정은 발급 대상입니다.</div>
+        <div style="display: flex; align-items: center; justify-content: flex-end; gap: 8px;">
+          <button type="button" style="display: inline-flex; align-items: center; height: 36px; padding: 0 12px; border: 0; border-radius: 8px; background: transparent; color: #3d3d3a; font-size: 14px; font-weight: 500;">취소</button>
+          <button type="button" style="display: inline-flex; align-items: center; height: 36px; padding: 0 14px; border: 0; border-radius: 8px; background: #cc785c; color: #ffffff; font-size: 14px; font-weight: 600;">사유와 함께 재요청</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 12px;">
+    <div class="kicker">상태 3 · 거부됨 — 재제안 대기 (섹션은 원문 유지 · 채팅에 "(제안 거부) 사유" 가 남음)</div>
+    <div style="display: flex; flex-direction: column; gap: 10px; padding: 12px 14px; border: 1px solid #e6dfd8; border-radius: 12px; background: #faf9f5;">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span style="width: 8px; height: 8px; border-radius: 9999px; background: #8e8b82; flex: none;"></span>
+        <span style="font-size: 13px; font-weight: 500; color: #6c6a64;">Navi 제안 · 거부됨</span>
+        <span style="flex: 1;"></span>
+        <span style="display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 500; color: #6c6a64;"><svg class="i" style="width: 13px; height: 13px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg><span>사유를 반영해 다시 제안하는 중</span></span>
+      </div>
+      <div style="padding: 2px 0 2px 12px; border-left: 2px solid #e6dfd8; font-size: 13px; line-height: 1.5; color: #3d3d3a;">2월 29일 처리는 정책팀 확정 전이라 빼주세요. 탈퇴 계정은 제외가 맞지만 휴면 계정은 발급 대상입니다.</div>
+    </div>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 12px;">
+    <div class="kicker">상태 4 · 만료(stale) — 제안 이후 섹션이 바뀜 · 수락 시 충돌도 같은 배너 (문구만 "적용하지 못했습니다")</div>
+    <div style="display: flex; flex-direction: column; border: 1px solid #e6dfd8; border-radius: 12px; overflow: hidden; background: #faf9f5;">
+      <div style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: #f4ebd1; color: #7a5a0c;">
+        <svg class="i" style="width: 16px; height: 16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+        <span style="font-size: 13px; font-weight: 500; line-height: 1.45;">문서가 변경되어 이 제안은 만료되었습니다 (v4에서 예외 조건이 수정됨)</span>
+        <span style="flex: 1;"></span>
+        <button type="button" style="display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 10px; border: 0; border-radius: 8px; background: transparent; color: #7a5a0c; font-size: 13px; font-weight: 500;"><svg class="i" style="width: 13px; height: 13px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg><span>다시 제안 받기</span></button>
+      </div>
+      <div style="opacity: 0.5;">
+      <ul class="doc" style="padding: 12px 14px 12px 32px;">
+        <li>마케팅 수신 동의를 하지 않은 유저에게는 알림톡을 보내지 <span class="del">않는다</span> <span class="add">않고, 적립금만 발급한다</span></li>
+        <li>이미 발급받은 유저에게 중복 발급하지 않는다</li>
+        <li><span class="add">생일이 2월 29일인 유저는 평년에 3월 1일로 처리한다</span></li>
+        <li><span class="add">탈퇴·휴면 계정은 발급 대상에서 제외한다</span></li>
+      </ul>
+      </div>
+      <div style="display: flex; align-items: center; justify-content: flex-end; gap: 8px; padding: 10px 14px; border-top: 1px solid #ebe6df;">
+        <button type="button" disabled="disabled" style="display: inline-flex; align-items: center; height: 36px; padding: 0 12px; border: 0; border-radius: 8px; background: transparent; color: #8e8b82; font-size: 14px; font-weight: 500; cursor: default;">거부</button>
+        <button type="button" disabled="disabled" style="display: inline-flex; align-items: center; height: 36px; padding: 0 14px; border: 0; border-radius: 8px; background: #e6dfd8; color: #6c6a64; font-size: 14px; font-weight: 600; cursor: default;">수락</button>
+      </div>
+    </div>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 12px;">
+    <div class="kicker">상태 5 · 수락 요청 중 — 액션 비활성, 낙관적 잠금(대상 섹션의 현재 값 = 제안 시점 값) 확인 대기</div>
+    <div style="display: flex; flex-direction: column; border: 1px solid #cc785c; border-radius: 12px; overflow: hidden; background: #faf9f5;">
+      <div style="display: flex; align-items: flex-start; gap: 8px; padding: 10px 14px; background: #f5ece6;">
+        <span style="width: 8px; height: 8px; margin-top: 6px; border-radius: 9999px; background: #cc785c; flex: none;"></span>
+        <span style="font-size: 13px; font-weight: 500; color: #994d35; flex: none;">Navi 제안</span>
+        <span style="font-size: 13px; line-height: 1.5; color: #3d3d3a;">마케팅 미동의 유저의 적립금 처리를 분명히 하고, 엣지케이스 두 건을 보탰어요.</span>
+      </div>
+      <ul class="doc" style="padding: 12px 14px 12px 32px;">
+        <li>마케팅 수신 동의를 하지 않은 유저에게는 알림톡을 보내지 <span class="del">않는다</span> <span class="add">않고, 적립금만 발급한다</span></li>
+        <li>이미 발급받은 유저에게 중복 발급하지 않는다</li>
+        <li><span class="add">생일이 2월 29일인 유저는 평년에 3월 1일로 처리한다</span></li>
+        <li><span class="add">탈퇴·휴면 계정은 발급 대상에서 제외한다</span></li>
+      </ul>
+      <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; border-top: 1px solid #ebe6df;">
+        <span style="display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: #6c6a64;"><svg class="i" style="width: 13px; height: 13px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg><span>적용 중 — 섹션이 그대로인지 확인하고 v4로 저장합니다</span></span>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <button type="button" disabled="disabled" style="display: inline-flex; align-items: center; height: 36px; padding: 0 12px; border: 0; border-radius: 8px; background: transparent; color: #8e8b82; font-size: 14px; font-weight: 500; cursor: default;">거부</button>
+          <button type="button" disabled="disabled" style="display: inline-flex; align-items: center; height: 36px; padding: 0 14px; border: 0; border-radius: 8px; background: #e6dfd8; color: #6c6a64; font-size: 14px; font-weight: 600; cursor: default;">수락</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 12px;">
+    <div class="kicker">상태 6 · 적용됨 — 섹션은 새 내용으로 교체, 제안은 활동으로만 남음</div>
+    <div style="display: flex; flex-direction: column; gap: 8px;">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <h2 class="h2">예외 조건 <span class="req">필수</span></h2>
+        <span style="display: inline-flex; align-items: center; gap: 4px; height: 22px; padding: 0 8px 0 6px; border-radius: 9999px; background: #efe9de; color: #141413; font-size: 12px; font-weight: 500;"><svg class="i" style="width: 12px; height: 12px; color: #27693b;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg><span>Navi 제안 적용 · v4</span></span>
+      </div>
+      <ul class="doc">
+        <li>마케팅 수신 동의를 하지 않은 유저에게는 알림톡을 보내지 않고, 적립금만 발급한다</li>
+        <li>이미 발급받은 유저에게 중복 발급하지 않는다</li>
+        <li>생일이 2월 29일인 유저는 평년에 3월 1일로 처리한다</li>
+        <li>탈퇴·휴면 계정은 발급 대상에서 제외한다</li>
+      </ul>
+    </div>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 12px;">
+    <div class="kicker">상태 7 · 메타 필드 변경 제안 (update_field) — 문서 상단 카드 · 백엔드에 필드가 생기면</div>
+    <div style="display: flex; flex-direction: column; border: 1px solid #cc785c; border-radius: 12px; overflow: hidden; background: #faf9f5;">
+      <div style="display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: #f5ece6;">
+        <span style="width: 8px; height: 8px; border-radius: 9999px; background: #cc785c; flex: none;"></span>
+        <span style="font-size: 13px; font-weight: 500; color: #994d35;">메타 필드 변경 제안</span>
+        <span style="font-size: 13px; color: #3d3d3a;">"다음 주 금요일로" 요청을 날짜로 바꿨어요.</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 10px; padding: 12px 14px; font-size: 16px; color: #3d3d3a;">
+        <span style="font-size: 13px; font-weight: 500; color: #6c6a64; width: 56px;">마감일</span>
+        <span class="del">미정</span>
+        <span class="add">2026년 9월 12일 (금)</span>
+      </div>
+      <div style="display: flex; align-items: center; justify-content: flex-end; gap: 8px; padding: 10px 14px; border-top: 1px solid #ebe6df;">
+        <button type="button" style="display: inline-flex; align-items: center; height: 36px; padding: 0 12px; border: 0; border-radius: 8px; background: transparent; color: #a53a3a; font-size: 14px; font-weight: 500;">거부</button>
+        <button type="button" style="display: inline-flex; align-items: center; height: 36px; padding: 0 14px; border: 0; border-radius: 8px; background: #cc785c; color: #ffffff; font-size: 14px; font-weight: 600;">수락</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+</body>
+</html>

@@ -1,0 +1,107 @@
+{
+  "pages": [
+    { "id": "page-1", "name": "화면" },
+    { "id": "page-2", "name": "상태" }
+  ],
+  "artboards": [
+    {
+      "file": "Board.dc.html",
+      "x": 0,
+      "y": 220,
+      "w": 1440,
+      "h": 900,
+      "title": "업무 보드 — 게이트 뱃지 · 드래그",
+      "page": "page-1"
+    },
+    {
+      "file": "DetailPre.dc.html",
+      "x": 1560,
+      "y": 220,
+      "w": 1440,
+      "h": 1200,
+      "title": "태스크 상세 — 분석 전 · 섹션 편집 · 알림톡 템플릿",
+      "page": "page-1"
+    },
+    {
+      "file": "Main.dc.html",
+      "x": 0,
+      "y": 1540,
+      "w": 1440,
+      "h": 1560,
+      "title": "태스크 상세 — 분석 후 · 단어 diff 제안 · 미결정 답변",
+      "page": "page-1"
+    },
+    {
+      "file": "TaskCreate.dc.html",
+      "x": 1560,
+      "y": 1540,
+      "w": 800,
+      "h": 980,
+      "title": "태스크 생성 — 유형 템플릿 (정책·배치 주기·세부사항·예외 조건)",
+      "page": "page-1"
+    },
+    {
+      "file": "AnalyzeWarning.dc.html",
+      "x": 2440,
+      "y": 1540,
+      "w": 560,
+      "h": 560,
+      "title": "분석 시작 — 예제 마커 경고",
+      "page": "page-1"
+    },
+    {
+      "file": "TodoWarning.dc.html",
+      "x": 2440,
+      "y": 2220,
+      "w": 560,
+      "h": 560,
+      "title": "Todo 이동 — 게이트 경고",
+      "page": "page-1"
+    },
+    {
+      "file": "ProposalStates.dc.html",
+      "x": 0,
+      "y": 220,
+      "w": 840,
+      "h": 1620,
+      "title": "제안 상태 — 문서 쪽 (단어 diff)",
+      "page": "page-2"
+    },
+    {
+      "file": "PanelStates.dc.html",
+      "x": 940,
+      "y": 220,
+      "w": 440,
+      "h": 1180,
+      "title": "Navi 패널 상태 · 빈 컬럼",
+      "page": "page-2"
+    }
+  ],
+  "annotations": [
+    {
+      "id": "note-system",
+      "x": 0,
+      "y": 0,
+      "w": 600,
+      "text": "디자인 시스템: docs/DESIGN.md (getdesign Claude 원문 + Navi v2 적용 가이드)\n라이트 전용 · 코랄 채움 버튼은 화면당 1개 · 유형은 아이콘+툴팁 · 12–13px 텍스트는 muted(#6c6a64)",
+      "page": "page-1"
+    },
+    {
+      "id": "note-flow",
+      "x": 1560,
+      "y": 0,
+      "w": 760,
+      "text": "범위 1 개정: 섹션 축 = 정책(무엇) → 세부사항(어떤 값으로, 항목 — 값) → 예외 조건(언제 제외). 세부사항·예외 조건 필수, 완료 조건 없음. 고정 문구는 세부사항 아래 ### 알림톡 템플릿 코드블록(마커 유지).\n흐름: 생성 → Backlog → 상세에서 섹션 편집으로 마커 수정 → 분석 시작(마커 남으면 경고) → 미결정 답변 → 게이트 3/3",
+      "page": "page-1"
+    },
+    {
+      "id": "note-states",
+      "x": 0,
+      "y": 0,
+      "w": 760,
+      "text": "제안: 교체 단위는 섹션, 표시는 단어 단위 diff(서버 LCS) — 삭제 취소선 / 추가 강조. 수락/거부는 섹션 자리에서. 거부 → 사유 입력 → 채팅에 '(제안 거부) 사유' → 재제안. 낙관적 잠금은 대상 섹션의 현재 값과 제안 시점 값 비교 → 다르면 stale.\n메타 필드(마감일·우선순위·담당자·태그) 제안은 문서 상단 카드.",
+      "page": "page-2"
+    }
+  ],
+  "launch": { "view": "canvas", "page": "page-1" }
+}
