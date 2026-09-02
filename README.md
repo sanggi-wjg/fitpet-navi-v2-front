@@ -13,7 +13,7 @@
 ```bash
 npm ci
 cp .env.example .env          # VITE_API_BASE_URL 은 dev 에서 비워 둔다 (프록시가 /api → :9000)
-npm run generate:api          # 백엔드가 떠 있어야 함 → src/api/ 생성
+npm run generate:api          # 백엔드가 떠 있어야 할 때만 필요 — openapi.json 스냅샷 + src/api/ 재생성(둘 다 커밋 대상)
 npm run dev                   # https://localhost:5173 (자체 서명 인증서 — 최초 접속 시 경고 수락)
 ```
 
