@@ -1,6 +1,6 @@
 # Fitpet Navi v2 Front
 
-담당자가 개발자에게 넘기기 전에 요구사항을 정제·확인하는 도구의 프론트엔드입니다. 스펙은 [`docs/spec.md`](docs/spec.md), 디자인 시스템은 [`docs/DESIGN.md`](docs/DESIGN.md)를 따릅니다.
+담당자가 개발자에게 넘기기 전에 요구사항을 정제·확인하는 도구의 프론트엔드입니다. 디자인 시스템은 [`docs/DESIGN.md`](docs/DESIGN.md)를 따릅니다.
 
 - **범위 1 — 태스크 생성**: 유형(신규 기능 / 기존 기능 수정 / 자동화·배치 / 정책 변경) 템플릿 삽입, `(예: …)` 예제 마커 하이라이트, "분석 시작" 시 마커 잔존 경고 — **구현됨**
 - **범위 2 — 정제**: Navi 가 섹션 단위 변경을 제안하고 사용자가 수락/거부 — 백엔드 API 대기
@@ -56,7 +56,6 @@ src/
   pages/          TaskBoardPage (/board) · TaskDetailPage (/tasks/:id)
   test/           Vitest setup(jsdom 폴리필) · factories · renderWithProviders
 docs/
-  spec.md         제품 스펙
   DESIGN.md       디자인 시스템 (getdesign Claude 원문 + Navi v2 적용 가이드)
   design/         Claude Design 캔버스 아트보드 소스 (*.dc.html, canvas.json)
 ```

@@ -1,6 +1,6 @@
 # Fitpet Navi v2 Front
 
-요구사항 정제·확인 루프 SPA (`docs/spec.md`). React 19 · Vite · TypeScript strict · Tailwind v4 · shadcn(base-nova) · React Query · orval.
+요구사항 정제·확인 루프 SPA. React 19 · Vite · TypeScript strict · Tailwind v4 · shadcn(base-nova) · React Query · orval.
 설정·구조·백엔드 상태는 `README.md`, 시각 규칙은 `docs/DESIGN.md`.
 
 ## Commands
