@@ -34,3 +34,11 @@ updates:
         update-types:
           - 'minor'
           - 'patch'
+    ignore:
+      # typescript-eslint 가 아직 미지원 (peer: eslint ^9, typescript <6.1) — 지원되면 해제
+      - dependency-name: 'eslint'
+        update-types: ['version-update:semver-major']
+      - dependency-name: '@eslint/js'
+        update-types: ['version-update:semver-major']
+      - dependency-name: 'typescript'
+        update-types: ['version-update:semver-major']
