@@ -101,7 +101,7 @@
   --secondary-foreground: var(--color-ink);
   --accent: var(--color-surface-soft);
   --accent-foreground: var(--color-ink);
-  --destructive: var(--color-error);
+  --destructive: var(--color-error-deep);
   --border: var(--color-hairline);
   --input: var(--color-hairline);
   --ring: var(--color-primary);

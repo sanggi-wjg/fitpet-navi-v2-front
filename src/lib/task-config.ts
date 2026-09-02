@@ -1,5 +1,5 @@
 import { PenLine, Scale, Sparkles, Timer, type LucideIcon } from 'lucide-react'
-import type { BoardStatus, TaskStatus, TaskType } from '@/types/task'
+import type { BoardStatus, Priority, TaskStatus, TaskType } from '@/types/task'
 
 export interface TaskTypeConfig {
   label: string
@@ -52,3 +52,16 @@ export const BOARD_STATUSES: readonly BoardStatus[] = COLUMNS.map((column) => co
 export function isBoardStatus(status: TaskStatus): status is BoardStatus {
   return (BOARD_STATUSES as readonly TaskStatus[]).includes(status)
 }
+
+/** 우선순위 라벨 — 0이 가장 높다. 카드에는 기본값(보통)을 표시하지 않는다. */
+export const PRIORITY_LABEL: Record<Priority, string> = {
+  0: '매우 높음',
+  1: '높음',
+  2: '보통',
+  3: '낮음',
+  4: '매우 낮음',
+}
+
+export const PRIORITIES: readonly Priority[] = [0, 1, 2, 3, 4]
+
+export const DEFAULT_PRIORITY: Priority = 2
