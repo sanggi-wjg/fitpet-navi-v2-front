@@ -24,3 +24,9 @@
    프론트에 섹션명·"완료 조건" 을 하드코딩하지 않는다. 예제 마커 검사는 `(예:` 문자열 검색(`countMarkers`).
 4. import 는 `@/*` alias 만. 상대경로(`../`) 금지.
 5. 코드 변경 후 `npm run lint && npm run typecheck && npm run test:run`, 마무리 시 `npm run build` 까지 통과해야 한다.
+
+## 하네스 (`.claude/`)
+
+- **훅**: `src/api` 편집 시도는 PreToolUse 훅이 차단. 파일 편집 후 PostToolUse 훅이 prettier 자동 적용 + eslint 검사(오류는 즉시 피드백).
+- **커맨드**: `/verify` = 규칙 5 파이프라인(lint→typecheck→test→build, `quick` 인자로 build 생략), `/regen-api` = 백엔드 확인→orval 재생성→매핑 반영 절차.
+- **에이전트**: `navi-review` = 절대 규칙·DESIGN 토큰 준수 읽기 전용 리뷰어.
