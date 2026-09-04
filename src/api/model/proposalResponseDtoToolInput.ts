@@ -5,6 +5,4 @@
  * OpenAPI spec version: 0.1.0
  */
 
-export interface HealthResponseDto {
-  status: string;
-}
+export type ProposalResponseDtoToolInput = { [key: string]: unknown };

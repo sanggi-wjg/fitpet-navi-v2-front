@@ -6,8 +6,8 @@ import { computeGate } from '@/lib/gate'
 import { makeTask } from '@/test/factories'
 import { renderWithProviders } from '@/test/render'
 
-const task = makeTask({ content: '## 정책:\n- (예: 금액) (예: 대상)\n' })
-const gate = computeGate({ content: task.content })
+const task = makeTask({ markerCount: 2 })
+const gate = computeGate({ markerCount: task.markerCount })
 
 describe('TodoMoveWarningDialog', () => {
   it('첫 실패 항목(마커)으로 헤드라인을 고르고 3항목 체크리스트를 보인다', () => {

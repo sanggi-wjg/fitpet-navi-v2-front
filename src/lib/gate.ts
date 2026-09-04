@@ -1,4 +1,3 @@
-import { countMarkers } from '@/lib/markdown'
 import type { Task, UndecidedItem } from '@/types/task'
 
 export type GateFailure = 'markers' | 'analysis' | 'undecided'
@@ -21,7 +20,8 @@ export interface GateResult {
  * 1. 예제 마커 `(예:` 0건  2. 분석 1회 이상  3. 미결정 사항 전부 답변
  */
 export interface GateInput {
-  content: string
+  /** 섹션 본문의 `(예:` 마커 합 (`Task.markerCount`) */
+  markerCount: number
   /** 분석 실행 횟수 — 백엔드 준비 전에는 0 */
   analysisCount?: number
   /** 미결정 사항 — 백엔드 준비 전에는 [] */
@@ -30,7 +30,7 @@ export interface GateInput {
 
 export function computeGate(input: GateInput): GateResult {
   const undecided = input.undecided ?? []
-  const markerCount = countMarkers(input.content)
+  const markerCount = input.markerCount
   const markersClear = markerCount === 0
   const analysisDone = (input.analysisCount ?? 0) >= 1
   const undecidedTotal = undecided.length
@@ -58,8 +58,8 @@ export function computeGate(input: GateInput): GateResult {
 }
 
 /** 태스크 뷰 모델에서 바로 계산 — 분석·미결정은 백엔드 준비 전이라 문서 마커만 실값 */
-export function gateOf(task: Pick<Task, 'content'>): GateResult {
-  return computeGate({ content: task.content })
+export function gateOf(task: Pick<Task, 'markerCount'>): GateResult {
+  return computeGate({ markerCount: task.markerCount })
 }
 
 /** 카드의 게이트 점 옆 짧은 라벨 = 첫 실패 항목 (DESIGN.md D.3) */

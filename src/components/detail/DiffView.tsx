@@ -1,12 +1,12 @@
+import type { DiffLine } from '@/lib/diff'
 import { cn } from '@/lib/utils'
-import type { DiffLine } from '@/types/proposal'
 
 const DELETED =
-  'bg-error-wash text-error-deep rounded-[4px] px-0.5 line-through decoration-error-deep/60'
-const INSERTED = 'bg-success-wash text-success-deep rounded-[4px] px-0.5 font-medium'
+  'bg-error-wash text-error-deep rounded-xs px-0.5 line-through decoration-error-deep/60'
+const INSERTED = 'bg-success-wash text-success-deep rounded-xs px-0.5 font-medium'
 
 /**
- * 서버(LCS)가 계산한 diff 렌더 — 프론트는 런을 그리기만 한다 (DESIGN.md D.2 `section-proposal`).
+ * 제안 diff 렌더 (DESIGN.md D.2 `section-proposal`) — 계산은 `src/lib/diff.ts`.
  * 삭제 = 취소선 + error-wash, 추가 = success-wash + 500. changed 줄만 어절 단위.
  */
 export function DiffView({ diff, className }: { diff: DiffLine[]; className?: string }) {
@@ -28,20 +28,16 @@ export function DiffView({ diff, className }: { diff: DiffLine[]; className?: st
             </p>
           )
         }
-        const empty = line.text.length === 0
+        const text = line.text.length === 0 ? ' ' : line.text
         return (
           <p key={index} className="whitespace-pre-wrap">
             {line.type === 'equal' ? (
-              empty ? (
-                ' '
-              ) : (
-                line.text
-              )
+              text
             ) : (
               <span
                 className={cn(line.type === 'delete' ? DELETED : INSERTED, 'box-decoration-clone')}
               >
-                {empty ? ' ' : line.text}
+                {text}
               </span>
             )}
           </p>

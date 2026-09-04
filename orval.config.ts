@@ -11,14 +11,11 @@ export default defineConfig({
       client: 'react-query',
       mode: 'tags-split',
       httpClient: 'axios',
+      clean: true,
       override: {
         mutator: {
           path: 'src/lib/axios-instance.ts',
           name: 'customInstance',
-        },
-        query: {
-          useQuery: true,
-          useMutation: true,
         },
       },
     },

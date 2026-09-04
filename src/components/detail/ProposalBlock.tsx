@@ -1,52 +1,62 @@
-import { AlertTriangle, LoaderCircle } from 'lucide-react'
-import { useState } from 'react'
+import { AlertTriangle, CircleCheck, LoaderCircle } from 'lucide-react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { DiffView } from '@/components/detail/DiffView'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
-import { FIELD_LABEL, proposalTargetLabel } from '@/lib/proposal-mapping'
+import { lineDiff } from '@/lib/diff'
+import { isProposalStale } from '@/lib/proposal-mapping'
 import { cn } from '@/lib/utils'
-import type { DiffLine, Proposal } from '@/types/proposal'
+import type { Proposal } from '@/types/proposal'
+import type { TaskSection } from '@/types/task'
 
 interface ProposalBlockProps {
   proposal: Proposal
-  /** chat/reject 응답의 diff — 리로드 후에는 없다 (목록 API 가 diff 를 주지 않음) */
-  diff: DiffLine[] | null
-  /** 현재 task.version — 제안 시점과 다르면 만료 가능성 경고 */
-  currentVersion: number
-  /** update_field 표시용 현재 값 */
-  currentValue?: string | null
+  /** 현재 섹션 — diff 기준 본문과 만료 판정용 version */
+  section: Pick<TaskSection, 'body' | 'version'>
   accepting: boolean
   /** 거부 직후 — 사유를 반영한 재제안 생성 중 */
   regenerating: boolean
-  /** accept 409 이후 서버 만료 문구 (상태 stale 포함) */
+  /** accept 409 이후 서버 만료 문구 */
   staleMessage: string | null
   onAccept: () => void
   onReject: (reason: string) => void
   onRequestAgain: () => void
+  /** 만료 블록 닫기 — 수락·거부 없이 종결(CLOSED) */
+  onClose: () => void
+  closing?: boolean
 }
 
 /**
- * 문서 위 제안 블록 — 섹션 본문 자리(replace_section) 또는 문서 상단(update_field).
+ * 문서 위 제안 블록 — 섹션 본문 자리에 diff 와 [거부][수락].
  * pending → (수락 | 거부→사유→재제안) · stale → 경고 배너 + 다시 제안 받기 (DESIGN.md D.2)
  */
 export function ProposalBlock({
   proposal,
-  diff,
-  currentVersion,
-  currentValue,
+  section,
   accepting,
   regenerating,
   staleMessage,
   onAccept,
   onReject,
   onRequestAgain,
+  onClose,
+  closing = false,
 }: ProposalBlockProps) {
   const [rejecting, setRejecting] = useState(false)
+  const rejectButtonRef = useRef<HTMLButtonElement>(null)
+  /** 사유 입력을 닫으면 포커스를 "거부" 버튼으로 되돌린다 (버튼이 다시 마운트된 뒤) */
+  const closeReject = () => {
+    setRejecting(false)
+    requestAnimationFrame(() => rejectButtonRef.current?.focus())
+  }
+  const diff = useMemo(
+    () => lineDiff(section.body, proposal.newContent),
+    [section.body, proposal.newContent],
+  )
 
   if (regenerating) return <RegeneratingBlock proposal={proposal} />
 
-  const stale = proposal.status === 'stale' || staleMessage !== null
-  const versionDrift = !stale && proposal.taskVersion !== currentVersion
+  const stale = isProposalStale(proposal, section, staleMessage)
 
   return (
     <div
@@ -59,16 +69,29 @@ export function ProposalBlock({
         <div className="bg-warning-wash text-warning-deep flex flex-wrap items-center gap-2 px-3.5 py-2.5">
           <AlertTriangle className="size-[15px] shrink-0" strokeWidth={1.75} />
           <span className="min-w-0 flex-1 text-[13px] leading-[1.45] font-medium">
-            {staleMessage ?? '문서가 변경되어 이 제안은 만료되었습니다'}
+            {staleMessage ??
+              `문서가 변경되어 이 제안은 만료되었습니다 (v${proposal.sectionVersion} → v${section.version})`}
           </span>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="text-warning-deep hover:text-warning-deep -my-1 text-[13px]"
-            onClick={onRequestAgain}
-          >
-            다시 제안 받기
-          </Button>
+          <div className="-my-1 flex shrink-0 items-center gap-1">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-warning-deep hover:text-warning-deep text-[13px]"
+              onClick={onRequestAgain}
+              disabled={closing}
+            >
+              다시 제안 받기
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-warning-deep hover:text-warning-deep text-[13px]"
+              onClick={onClose}
+              disabled={closing}
+            >
+              {closing ? '닫는 중…' : '닫기'}
+            </Button>
+          </div>
         </div>
       )}
       <div className={cn('flex flex-col gap-2 px-4 py-3', !stale && 'bg-primary-wash')}>
@@ -82,12 +105,7 @@ export function ProposalBlock({
           >
             Navi 제안
           </span>
-          <span className="text-muted font-mono text-[12px]">{proposalTargetLabel(proposal)}</span>
-          {versionDrift && (
-            <span className="text-warning-deep ml-auto text-[12px] font-medium">
-              제안 후 문서가 수정됨 (v{proposal.taskVersion} → v{currentVersion})
-            </span>
-          )}
+          <span className="text-muted font-mono text-[12px]">{proposal.sectionName}</span>
         </div>
         {proposal.reason && (
           <p className="text-body text-[13px] leading-[1.5]">{proposal.reason}</p>
@@ -95,7 +113,7 @@ export function ProposalBlock({
       </div>
 
       <div className={cn('bg-canvas px-4 py-3.5', stale && 'opacity-50')}>
-        <ProposalBody proposal={proposal} diff={diff} currentValue={currentValue} />
+        <DiffView diff={diff} />
       </div>
 
       {!stale && (
@@ -103,7 +121,7 @@ export function ProposalBlock({
           {rejecting ? (
             <RejectForm
               busy={accepting}
-              onCancel={() => setRejecting(false)}
+              onCancel={closeReject}
               onSubmit={(reason) => {
                 setRejecting(false)
                 onReject(reason)
@@ -111,13 +129,19 @@ export function ProposalBlock({
             />
           ) : (
             <div className="flex items-center justify-between gap-3">
-              <span className="text-muted text-[12px]">
-                {proposal.tool === 'replace_section'
-                  ? `수락하면 이 섹션만 교체되고 v${currentVersion + 1}로 저장됩니다`
-                  : '수락하면 이 필드만 바뀝니다'}
-              </span>
+              {accepting ? (
+                <span className="text-muted inline-flex items-center gap-1.5 text-[12px]">
+                  <LoaderCircle className="size-3.5 animate-spin" strokeWidth={2} />
+                  적용 중 — 섹션이 그대로인지 확인하고 v{section.version + 1}로 저장합니다
+                </span>
+              ) : (
+                <span className="text-muted text-[12px]">
+                  수락하면 이 섹션만 교체되고 v{section.version + 1}로 저장됩니다
+                </span>
+              )}
               <div className="flex shrink-0 items-center gap-1.5">
                 <Button
+                  ref={rejectButtonRef}
                   variant="ghost"
                   size="lg"
                   className="text-error-deep hover:text-error-deep px-3 text-[14px]"
@@ -132,14 +156,7 @@ export function ProposalBlock({
                   onClick={onAccept}
                   disabled={accepting}
                 >
-                  {accepting ? (
-                    <>
-                      <LoaderCircle className="size-4 animate-spin" strokeWidth={2} />
-                      적용 중…
-                    </>
-                  ) : (
-                    '수락'
-                  )}
+                  {accepting ? '적용 중…' : '수락'}
                 </Button>
               </div>
             </div>
@@ -147,44 +164,6 @@ export function ProposalBlock({
         </div>
       )}
     </div>
-  )
-}
-
-function ProposalBody({
-  proposal,
-  diff,
-  currentValue,
-}: {
-  proposal: Proposal
-  diff: DiffLine[] | null
-  currentValue?: string | null
-}) {
-  if (proposal.tool === 'update_field') {
-    const label = proposal.field ? FIELD_LABEL[proposal.field] : '필드'
-    return (
-      <p className="text-body text-[15px] leading-[1.6]">
-        <span className="text-muted font-medium">{label}: </span>
-        {currentValue ? (
-          <span className="bg-error-wash text-error-deep decoration-error-deep/60 rounded-[4px] px-0.5 line-through">
-            {currentValue}
-          </span>
-        ) : (
-          <span className="text-muted">없음</span>
-        )}
-        <span className="text-muted"> → </span>
-        <span className="bg-success-wash text-success-deep rounded-[4px] px-0.5 font-medium">
-          {proposal.value}
-        </span>
-      </p>
-    )
-  }
-  if (diff && diff.length > 0) return <DiffView diff={diff} />
-  return (
-    <p className="text-muted text-[13px] leading-[1.5]">
-      이전 세션에서 만든 제안이라 변경 내용 미리보기를 표시할 수 없습니다. 수락하면 제안 내용대로{' '}
-      <span className="font-mono">{proposal.section}</span> 섹션이 교체됩니다 — 내용을 확인하려면
-      거부 후 다시 요청해 주세요.
-    </p>
   )
 }
 
@@ -219,13 +198,17 @@ function RejectForm({
   onSubmit: (reason: string) => void
 }) {
   const [reason, setReason] = useState('')
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
   const canSubmit = reason.trim().length > 0 && !busy
+  // "거부" 버튼이 사라지고 이 폼이 대신 뜨므로 포커스를 이어받는다 (autoFocus 는 a11y 규칙으로 금지)
+  useEffect(() => textareaRef.current?.focus(), [])
   return (
     <div className="bg-surface-soft -mx-4 -my-2.5 flex flex-col gap-2 px-4 py-3">
       <span className="text-ink text-[13px] font-medium">
         거부 사유 — Navi가 이 사유를 반영해 다시 제안합니다
       </span>
       <Textarea
+        ref={textareaRef}
         value={reason}
         onChange={(event) => setReason(event.target.value)}
         placeholder="예: 마케팅 미동의 유저는 이미 발송 대상에서 빠져 있어요"
@@ -251,5 +234,47 @@ function RejectForm({
         </Button>
       </div>
     </div>
+  )
+}
+
+const PILL =
+  'bg-surface-card inline-flex h-[22px] shrink-0 items-center gap-1.5 rounded-full pr-2.5 pl-2 text-[12px] font-medium'
+
+export type ProposalPillState = 'pending' | 'stale' | 'regenerating'
+
+/** 섹션 헤더 옆 제안 상태 pill — 중립 pill + 코랄 점 (DESIGN.md `badge-pill`) */
+export function ProposalPill({ state }: { state: ProposalPillState }) {
+  switch (state) {
+    case 'pending':
+      return (
+        <span className={cn(PILL, 'text-ink')}>
+          <span className="bg-primary size-2 rounded-full" aria-hidden />
+          제안 대기
+        </span>
+      )
+    case 'stale':
+      return (
+        <span className={cn(PILL, 'text-warning-deep')}>
+          <AlertTriangle className="size-3" strokeWidth={2} />
+          제안 만료
+        </span>
+      )
+    case 'regenerating':
+      return (
+        <span className={cn(PILL, 'text-muted')}>
+          <span className="bg-muted-soft size-2 rounded-full" aria-hidden />
+          재제안 대기
+        </span>
+      )
+  }
+}
+
+/** 수락 직후 — "Navi 제안 적용 · vN" (세션 안에서만, 섹션이 다시 바뀌면 사라진다) */
+export function AppliedPill({ version }: { version: number }) {
+  return (
+    <span className={cn(PILL, 'text-ink')}>
+      <CircleCheck className="text-success-deep size-3" strokeWidth={2} />
+      Navi 제안 적용 · v{version}
+    </span>
   )
 }

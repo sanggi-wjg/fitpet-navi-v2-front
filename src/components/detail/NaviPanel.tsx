@@ -9,14 +9,13 @@ import {
 } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { proposalTargetLabel } from '@/lib/proposal-mapping'
 import { cn } from '@/lib/utils'
 import type { PanelMessage, Proposal } from '@/types/proposal'
 
 const SUGGESTIONS = [
   '예외 조건에 빠진 엣지케이스를 추가해줘',
   '세부사항의 값을 항목 — 값 형태로 정리해줘',
-  '알림톡 문구를 실제 정책에 맞게 다듬어줘',
+  '문서 전체를 검토하고 가장 먼저 고칠 곳을 제안해줘',
 ]
 
 const GREETING =
@@ -25,6 +24,8 @@ const GREETING =
 interface NaviPanelProps {
   messages: PanelMessage[]
   proposalsById: Map<number, Proposal>
+  /** 이 세션 대화에 없는 대기 제안 (이전 세션·리로드) — 인사말 아래에 요약 카드로 */
+  priorPending: Proposal[]
   busy: boolean
   /** 읽기 전용 태스크 — 입력·칩 비활성 */
   disabled?: boolean
@@ -37,6 +38,7 @@ interface NaviPanelProps {
 export function NaviPanel({
   messages,
   proposalsById,
+  priorPending,
   busy,
   disabled = false,
   onSend,
@@ -60,6 +62,20 @@ export function NaviPanel({
 
       <div ref={scrollRef} className="flex flex-1 flex-col gap-3 overflow-y-auto p-4">
         <NaviBubble text={GREETING} />
+        {priorPending.length > 0 && (
+          <>
+            <div className="text-muted px-1 text-[12px]">
+              이전에 받은 제안이 문서에 남아 있습니다
+            </div>
+            {priorPending.map((proposal) => (
+              <ProposalSummaryCard
+                key={proposal.id}
+                proposal={proposal}
+                onShow={() => onShowProposal(proposal)}
+              />
+            ))}
+          </>
+        )}
         {messages.map((message, index) => (
           <PanelRow
             key={index}
@@ -144,9 +160,9 @@ function PanelRow({
   }
 }
 
-/** 요약 카드 — pending 은 사유 + "문서에서 보기", 처리된 제안은 한 줄 + 상태 pill */
+/** 요약 카드 — 대기 중은 사유 + "문서에서 보기", 처리된 제안은 한 줄 + 상태 pill */
 function ProposalSummaryCard({ proposal, onShow }: { proposal: Proposal; onShow: () => void }) {
-  const pending = proposal.status === 'pending'
+  const pending = proposal.status === 'pending' && !proposal.stale
   return (
     <div className="border-hairline bg-canvas flex flex-col gap-2 rounded-lg border p-3">
       <div className="flex items-center gap-2">
@@ -160,14 +176,14 @@ function ProposalSummaryCard({ proposal, onShow }: { proposal: Proposal; onShow:
           Navi 제안
         </span>
         <span className="text-muted min-w-0 truncate font-mono text-[12px]">
-          {proposalTargetLabel(proposal)}
+          {proposal.sectionName}
         </span>
         {!pending && <StatusBadge proposal={proposal} />}
       </div>
       {pending && proposal.reason && (
         <p className="text-body line-clamp-3 text-[13px] leading-[1.5]">{proposal.reason}</p>
       )}
-      {pending && (
+      {proposal.status === 'pending' && (
         <button
           type="button"
           onClick={onShow}
@@ -186,10 +202,11 @@ function StatusBadge({ proposal }: { proposal: Proposal }) {
     'bg-surface-card ml-auto inline-flex h-[22px] shrink-0 items-center gap-1 rounded-full pr-2 pl-1.5 text-[12px] font-medium'
   switch (proposal.status) {
     case 'accepted':
+      // 수락은 제안 시점 version 에서 정확히 +1 로 저장된다
       return (
         <span className={cn(base, 'text-ink')}>
           <CircleCheck className="text-success-deep size-3" strokeWidth={2} />
-          적용됨{proposal.tool === 'replace_section' && ` · v${proposal.taskVersion + 1}`}
+          적용됨 · v{proposal.sectionVersion + 1}
         </span>
       )
     case 'rejected':
@@ -199,15 +216,20 @@ function StatusBadge({ proposal }: { proposal: Proposal }) {
           거부됨
         </span>
       )
-    case 'stale':
+    case 'closed':
+      return (
+        <span className={cn(base, 'text-muted')}>
+          <X className="size-3" strokeWidth={2} />
+          닫힘
+        </span>
+      )
+    case 'pending':
       return (
         <span className={cn(base, 'text-warning-deep')}>
           <TriangleAlert className="size-3" strokeWidth={2} />
           만료됨
         </span>
       )
-    default:
-      return null
   }
 }
 
@@ -233,7 +255,7 @@ function PanelInput({
 
   return (
     <div className="flex shrink-0 flex-col gap-2 px-4 pt-2 pb-4">
-      <div className="flex flex-wrap gap-1.5" aria-label="추천 요청">
+      <div className="flex flex-wrap gap-1.5" role="group" aria-label="추천 요청">
         {SUGGESTIONS.map((text) => (
           <button
             key={text}
@@ -290,8 +312,9 @@ function PanelInput({
               aria-label="전송"
               className={cn(
                 'inline-flex size-7 shrink-0 items-center justify-center rounded-full transition-colors',
+                // 코랄 채움은 화면당 1개 — 전송은 텍스트 색만 바뀐다 (DESIGN.md `chat-input`)
                 draft.trim().length > 0 && !disabled
-                  ? 'bg-primary text-on-primary hover:bg-primary-active'
+                  ? 'bg-surface-card text-primary-text hover:bg-surface-cream-strong'
                   : 'bg-surface-card text-muted-soft',
               )}
             >

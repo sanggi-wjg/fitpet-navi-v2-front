@@ -1,7 +1,8 @@
 import { Plus, Search } from 'lucide-react'
-import { useMemo, useState } from 'react'
+import { Fragment, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
+import { ArchiveList } from '@/components/board/ArchiveList'
 import { BoardSkeleton } from '@/components/board/BoardSkeleton'
 import { CancelTaskDialog } from '@/components/board/CancelTaskDialog'
 import { KanbanBoard } from '@/components/board/KanbanBoard'
@@ -12,17 +13,33 @@ import { Topbar } from '@/components/layout/Topbar'
 import { TaskCreateDialog } from '@/components/task/TaskCreateDialog'
 import { Button } from '@/components/ui/button'
 import {
+  useArchiveTask,
   useMoveTask,
   useSetTaskStatus,
   useTasks,
   useTemplates,
   useUpdateTaskMeta,
 } from '@/hooks/useTasks'
+import { errorDescription } from '@/lib/api-error'
 import { mergeVisibleOrder } from '@/lib/board-order'
 import { gateOf, type GateResult } from '@/lib/gate'
 import { STATUS_LABEL } from '@/lib/task-config'
 import { cn } from '@/lib/utils'
 import type { BoardStatus, Task } from '@/types/task'
+
+/** 전체·준비됨만은 보드 필터, 아카이브는 별도 뷰 */
+type BoardView = 'all' | 'ready' | 'archived'
+
+const VIEW_CHIPS: Array<{ key: BoardView; label: string }> = [
+  { key: 'all', label: '전체' },
+  { key: 'ready', label: '준비됨만' },
+  { key: 'archived', label: '아카이브' },
+]
+
+const matchesKeyword = (task: Task, keyword: string) =>
+  !keyword ||
+  task.title.toLowerCase().includes(keyword) ||
+  task.tags.some((tag) => tag.toLowerCase().includes(keyword))
 
 interface PendingMove {
   task: Task
@@ -32,35 +49,33 @@ interface PendingMove {
   gate: GateResult
 }
 
-const NETWORK_HINT = '네트워크를 확인하고 다시 시도해 주세요.'
-
 export function TaskBoardPage() {
   const navigate = useNavigate()
-  const { tasks, isLoading, isError, refetch } = useTasks()
+  const { tasks, archivedTasks, isLoading, isError, refetch } = useTasks()
   const { isError: templatesError, refetch: refetchTemplates } = useTemplates()
   const { moveTask } = useMoveTask()
   const { setTaskStatus, isPending: statusPending } = useSetTaskStatus()
   const { updateMeta } = useUpdateTaskMeta()
+  const { archive, unarchive } = useArchiveTask()
 
   const [search, setSearch] = useState('')
-  const [readyOnly, setReadyOnly] = useState(false)
+  const [view, setView] = useState<BoardView>('all')
   const [createOpen, setCreateOpen] = useState(false)
   const [pendingMove, setPendingMove] = useState<PendingMove | null>(null)
   const [pendingCancel, setPendingCancel] = useState<Task | null>(null)
 
-  const visible = useMemo(() => {
-    const keyword = search.trim().toLowerCase()
-    return tasks.filter((task) => {
-      if (
-        keyword &&
-        !task.title.toLowerCase().includes(keyword) &&
-        !task.tags.some((tag) => tag.toLowerCase().includes(keyword))
-      )
-        return false
-      if (readyOnly && !gateOf(task).passed) return false
-      return true
-    })
-  }, [tasks, search, readyOnly])
+  const keyword = search.trim().toLowerCase()
+  const visible = useMemo(
+    () =>
+      tasks.filter(
+        (task) => matchesKeyword(task, keyword) && (view !== 'ready' || gateOf(task).passed),
+      ),
+    [tasks, keyword, view],
+  )
+  const visibleArchived = useMemo(
+    () => archivedTasks.filter((task) => matchesKeyword(task, keyword)),
+    [archivedTasks, keyword],
+  )
 
   const readyCount = tasks.filter((task) => task.status !== 'done' && gateOf(task).passed).length
 
@@ -75,8 +90,8 @@ export function TaskBoardPage() {
     try {
       await moveTask({ task, status, orderedIds: fullOrder(status, visibleIds) })
       if (status !== task.status) toast.success(`${STATUS_LABEL[status]}로 이동했습니다`)
-    } catch {
-      toast.error('이동하지 못했습니다', { description: NETWORK_HINT })
+    } catch (error) {
+      toast.error('이동하지 못했습니다', { description: errorDescription(error) })
     }
   }
 
@@ -93,20 +108,61 @@ export function TaskBoardPage() {
 
   const cancelTask = async (task: Task) => {
     try {
-      await setTaskStatus(task.id, 'canceled')
+      // 취소로 version 이 올라가므로 되돌리기는 응답의 version 으로 보낸다
+      const canceled = await setTaskStatus(task, 'canceled')
       setPendingCancel(null)
       toast.success('태스크를 취소했습니다', {
         action: {
           label: '되돌리기',
           onClick: () => {
-            setTaskStatus(task.id, task.status).catch(() =>
-              toast.error('되돌리지 못했습니다', { description: NETWORK_HINT }),
+            setTaskStatus(canceled, task.status).catch((error: unknown) =>
+              toast.error('되돌리지 못했습니다', { description: errorDescription(error) }),
             )
           },
         },
       })
-    } catch {
-      toast.error('취소하지 못했습니다', { description: NETWORK_HINT })
+    } catch (error) {
+      toast.error('취소하지 못했습니다', { description: errorDescription(error) })
+    }
+  }
+
+  /** 확인 없이 실행 — 토스트의 되돌리기가 복구 경로 */
+  const archiveTask = async (task: Task) => {
+    try {
+      await archive(task)
+      toast.success('아카이브했습니다', {
+        description: "보드의 '아카이브' 뷰에서 볼 수 있습니다.",
+        action: {
+          label: '되돌리기',
+          onClick: () => {
+            unarchive(task).catch((error: unknown) =>
+              toast.error('되돌리지 못했습니다', { description: errorDescription(error) }),
+            )
+          },
+        },
+      })
+    } catch (error) {
+      toast.error('아카이브하지 못했습니다', { description: errorDescription(error) })
+    }
+  }
+
+  const unarchiveTask = async (task: Task) => {
+    try {
+      await unarchive(task)
+      toast.success('아카이브를 해제했습니다', {
+        description:
+          task.status === 'canceled' ? '취소 상태라 보드에는 표시되지 않습니다.' : undefined,
+        action: {
+          label: '되돌리기',
+          onClick: () => {
+            archive(task).catch((error: unknown) =>
+              toast.error('되돌리지 못했습니다', { description: errorDescription(error) }),
+            )
+          },
+        },
+      })
+    } catch (error) {
+      toast.error('해제하지 못했습니다', { description: errorDescription(error) })
     }
   }
 
@@ -118,11 +174,13 @@ export function TaskBoardPage() {
         task.id,
       ]),
     onChangePriority: (task, priority) => {
-      updateMeta(task, { priority }).catch(() =>
-        toast.error('우선순위를 바꾸지 못했습니다', { description: NETWORK_HINT }),
+      updateMeta(task, { priority }).catch((error: unknown) =>
+        toast.error('우선순위를 바꾸지 못했습니다', { description: errorDescription(error) }),
       )
     },
     onCancel: setPendingCancel,
+    onArchive: (task) => void archiveTask(task),
+    onUnarchive: (task) => void unarchiveTask(task),
   }
 
   return (
@@ -153,27 +211,31 @@ export function TaskBoardPage() {
           <div className="flex flex-col gap-1">
             <h1 className="text-[28px] leading-[1.2] tracking-[-0.3px]">업무 보드</h1>
             <div className="text-muted text-[13px] font-medium">
-              {tasks.length}개 태스크 · 개발 준비됨 {readyCount}
+              {view === 'archived'
+                ? `아카이브 ${archivedTasks.length}개`
+                : `${tasks.length}개 태스크 · 개발 준비됨 ${readyCount}`}
             </div>
           </div>
           <div className="flex items-center gap-1.5" role="group" aria-label="필터">
-            {[
-              { key: false, label: '전체' },
-              { key: true, label: '준비됨만' },
-            ].map((chip) => (
-              <button
-                key={chip.label}
-                type="button"
-                onClick={() => setReadyOnly(chip.key)}
-                className={cn(
-                  'h-9 rounded-md px-3 text-[13px] font-medium transition-colors',
-                  readyOnly === chip.key
-                    ? 'bg-surface-card text-ink'
-                    : 'text-muted hover:bg-surface-soft',
+            {VIEW_CHIPS.map((chip) => (
+              <Fragment key={chip.key}>
+                {chip.key === 'archived' && (
+                  <span className="border-hairline mx-1 h-5 border-l" aria-hidden />
                 )}
-              >
-                {chip.label}
-              </button>
+                <button
+                  type="button"
+                  aria-pressed={view === chip.key}
+                  onClick={() => setView(chip.key)}
+                  className={cn(
+                    'h-9 rounded-md px-3 text-[13px] font-medium transition-colors',
+                    view === chip.key
+                      ? 'bg-surface-card text-ink'
+                      : 'text-muted hover:bg-surface-soft',
+                  )}
+                >
+                  {chip.label}
+                </button>
+              </Fragment>
             ))}
           </div>
         </div>
@@ -202,6 +264,8 @@ export function TaskBoardPage() {
             </Callout>
           ) : isLoading ? (
             <BoardSkeleton />
+          ) : view === 'archived' ? (
+            <ArchiveList tasks={visibleArchived} actions={actions} />
           ) : (
             <KanbanBoard
               tasks={visible}

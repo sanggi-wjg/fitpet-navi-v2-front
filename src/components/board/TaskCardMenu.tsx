@@ -1,4 +1,12 @@
-import { ArrowRightLeft, ArrowUpRight, Ban, Ellipsis, Flag } from 'lucide-react'
+import {
+  Archive,
+  ArchiveRestore,
+  ArrowRightLeft,
+  ArrowUpRight,
+  Ban,
+  Ellipsis,
+  Flag,
+} from 'lucide-react'
 import type { SyntheticEvent } from 'react'
 import { PriorityRadioItems } from '@/components/common/PriorityRadioItems'
 import {
@@ -20,6 +28,9 @@ export interface TaskCardActions {
   onMove: (task: Task, status: BoardStatus) => void
   onChangePriority: (task: Task, priority: Priority) => void
   onCancel: (task: Task) => void
+  /** 되돌릴 수 있으므로 확인 없이 실행한다 (토스트 되돌리기) */
+  onArchive: (task: Task) => void
+  onUnarchive: (task: Task) => void
 }
 
 /** 카드 안 이벤트가 카드 클릭(상세 이동)·드래그 센서로 번지지 않게 막는다. 포털 안 메뉴도 React 트리로 버블링된다. */
@@ -30,7 +41,10 @@ interface TaskCardMenuProps {
   actions: TaskCardActions
 }
 
-/** 카드 우상단 kebab — 드래그 대신 쓸 수 있는 키보드 경로이기도 하다 */
+/**
+ * 카드 우상단 kebab — 드래그 대신 쓸 수 있는 키보드 경로이기도 하다.
+ * 아카이브된 카드는 읽기 전용이라 상세 열기·아카이브 해제만 보인다 (취소 상태는 컬럼이 없어 이동 불가).
+ */
 export function TaskCardMenu({ task, actions }: TaskCardMenuProps) {
   return (
     <DropdownMenu>
@@ -60,39 +74,55 @@ export function TaskCardMenu({ task, actions }: TaskCardMenuProps) {
           상세 열기
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuSub>
-          <DropdownMenuSubTrigger>
-            <Flag strokeWidth={1.75} />
-            우선순위
-            <span className="text-muted ml-auto pl-3 text-[12px]">
-              {PRIORITY_LABEL[task.priority]}
-            </span>
-          </DropdownMenuSubTrigger>
-          <DropdownMenuSubContent className="min-w-[140px]">
-            <PriorityRadioItems
-              value={task.priority}
-              onChange={(priority) => actions.onChangePriority(task, priority)}
-            />
-          </DropdownMenuSubContent>
-        </DropdownMenuSub>
-        <DropdownMenuSub>
-          <DropdownMenuSubTrigger>
-            <ArrowRightLeft strokeWidth={1.75} />
-            이동
-          </DropdownMenuSubTrigger>
-          <DropdownMenuSubContent className="min-w-[120px]">
-            {COLUMNS.filter((column) => column.key !== task.status).map((column) => (
-              <DropdownMenuItem key={column.key} onClick={() => actions.onMove(task, column.key)}>
-                {column.label}
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuSubContent>
-        </DropdownMenuSub>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem variant="destructive" onClick={() => actions.onCancel(task)}>
-          <Ban strokeWidth={1.75} />
-          태스크 취소
-        </DropdownMenuItem>
+        {task.archived ? (
+          <DropdownMenuItem onClick={() => actions.onUnarchive(task)}>
+            <ArchiveRestore strokeWidth={1.75} />
+            아카이브 해제
+          </DropdownMenuItem>
+        ) : (
+          <>
+            <DropdownMenuSub>
+              <DropdownMenuSubTrigger>
+                <Flag strokeWidth={1.75} />
+                우선순위
+                <span className="text-muted ml-auto pl-3 text-[12px]">
+                  {PRIORITY_LABEL[task.priority]}
+                </span>
+              </DropdownMenuSubTrigger>
+              <DropdownMenuSubContent className="min-w-[140px]">
+                <PriorityRadioItems
+                  value={task.priority}
+                  onChange={(priority) => actions.onChangePriority(task, priority)}
+                />
+              </DropdownMenuSubContent>
+            </DropdownMenuSub>
+            <DropdownMenuSub>
+              <DropdownMenuSubTrigger>
+                <ArrowRightLeft strokeWidth={1.75} />
+                이동
+              </DropdownMenuSubTrigger>
+              <DropdownMenuSubContent className="min-w-[120px]">
+                {COLUMNS.filter((column) => column.key !== task.status).map((column) => (
+                  <DropdownMenuItem
+                    key={column.key}
+                    onClick={() => actions.onMove(task, column.key)}
+                  >
+                    {column.label}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuSubContent>
+            </DropdownMenuSub>
+            <DropdownMenuItem onClick={() => actions.onArchive(task)}>
+              <Archive strokeWidth={1.75} />
+              아카이브
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem variant="destructive" onClick={() => actions.onCancel(task)}>
+              <Ban strokeWidth={1.75} />
+              태스크 취소
+            </DropdownMenuItem>
+          </>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   )

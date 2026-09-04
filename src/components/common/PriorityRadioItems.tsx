@@ -7,7 +7,10 @@ interface PriorityRadioItemsProps {
   onChange: (priority: Priority) => void
 }
 
-/** 우선순위 라디오 목록 — 메뉴 본문이나 서브메뉴 안에 넣는다 */
+/**
+ * 우선순위 라디오 목록 — 메뉴 본문이나 서브메뉴 안에 넣는다.
+ * Base UI RadioItem 은 기본으로 메뉴를 닫지 않으므로(`closeOnClick=false`) 고르면 닫히도록 켠다.
+ */
 export function PriorityRadioItems({ value, onChange }: PriorityRadioItemsProps) {
   return (
     <DropdownMenuRadioGroup
@@ -15,7 +18,7 @@ export function PriorityRadioItems({ value, onChange }: PriorityRadioItemsProps)
       onValueChange={(next: unknown) => onChange(Number(next) as Priority)}
     >
       {PRIORITIES.map((priority) => (
-        <DropdownMenuRadioItem key={priority} value={String(priority)}>
+        <DropdownMenuRadioItem key={priority} value={String(priority)} closeOnClick>
           {PRIORITY_LABEL[priority]}
         </DropdownMenuRadioItem>
       ))}

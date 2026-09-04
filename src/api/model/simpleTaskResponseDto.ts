@@ -4,11 +4,10 @@
  * FastAPI
  * OpenAPI spec version: 0.1.0
  */
-import type { TaskSectionResponseDto } from './taskSectionResponseDto';
 import type { TaskStatusEnum } from './taskStatusEnum';
 import type { TaskTypeEnum } from './taskTypeEnum';
 
-export interface TaskResponseDto {
+export interface SimpleTaskResponseDto {
   id: number;
   title: string;
   tags: string | null;
@@ -21,5 +20,4 @@ export interface TaskResponseDto {
   version: number;
   created_at: string;
   updated_at: string;
-  task_sections: TaskSectionResponseDto[];
 }

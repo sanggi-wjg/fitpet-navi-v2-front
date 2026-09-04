@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { Callout } from '@/components/common/Callout'
-import { MarkerTextarea } from '@/components/common/MarkerTextarea'
+import { MarkdownDoc } from '@/components/common/MarkdownDoc'
 import { TypeTile } from '@/components/task/TypeTile'
 import { Button } from '@/components/ui/button'
 import {
@@ -13,6 +13,8 @@ import {
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { useCreateTask, useTemplates } from '@/hooks/useTasks'
+import { errorDescription } from '@/lib/api-error'
+import type { TemplateSection } from '@/lib/api-mapping'
 import { countMarkers } from '@/lib/markdown'
 import { TASK_TYPES, TASK_TYPE_ORDER } from '@/lib/task-config'
 import type { Task, TaskType } from '@/types/task'
@@ -24,7 +26,8 @@ interface TaskCreateDialogProps {
 }
 
 /**
- * 태스크 생성 (spec 범위 1). 유형을 고르면 템플릿 실제 텍스트가 본문에 들어간다.
+ * 태스크 생성 (spec 범위 1). 유형을 고르면 그 유형의 섹션 템플릿을 미리 보여주고,
+ * 섹션은 백엔드가 템플릿으로 만든다 — 본문 편집은 생성 후 상세 화면에서.
  * 생성과 분석은 별개 단계 — 여기서는 Backlog 에 만들기만 한다.
  */
 export function TaskCreateDialog({ open, onOpenChange, onCreated }: TaskCreateDialogProps) {
@@ -34,7 +37,8 @@ export function TaskCreateDialog({ open, onOpenChange, onCreated }: TaskCreateDi
         <DialogHeader>
           <DialogTitle className="text-[22px] leading-[1.3] font-medium">새 태스크</DialogTitle>
           <DialogDescription className="sr-only">
-            유형을 고르면 템플릿이 본문에 채워집니다. 예제 값은 (예: …) 로 표시됩니다.
+            유형을 고르면 그 유형의 섹션이 만들어집니다. 예제 값은 (예: …) 로 표시되며 생성 후 상세
+            화면에서 편집합니다.
           </DialogDescription>
         </DialogHeader>
         {/* 열릴 때마다 새로 마운트되어 초기 상태가 리셋된다 */}
@@ -62,41 +66,20 @@ function CreateTaskForm({ onClose, onCreated }: CreateTaskFormProps) {
 
   const [title, setTitle] = useState('')
   const [type, setType] = useState<TaskType>(DEFAULT_TYPE)
-  /** null 이면 아직 손대지 않은 상태 → 선택한 유형의 템플릿을 그대로 보여준다 */
-  const [draft, setDraft] = useState<string | null>(null)
-  const [pendingType, setPendingType] = useState<TaskType | null>(null)
 
-  const template = templates[type] ?? ''
-  const content = draft ?? template
-  const edited = draft !== null && draft.trim() !== template.trim() && draft.trim() !== ''
-
-  const applyType = (next: TaskType) => {
-    setType(next)
-    setDraft(null)
-    setPendingType(null)
-  }
-
-  const selectType = (next: TaskType) => {
-    if (next === type) return
-    if (edited) setPendingType(next)
-    else applyType(next)
-  }
-
-  const markerCount = countMarkers(content)
-  const canSubmit =
-    title.trim().length > 0 && content.trim().length > 0 && !isPending && !templatesError
+  const sections = templates[type] ?? []
+  const markerCount = sections.reduce((sum, section) => sum + countMarkers(section.body), 0)
+  const canSubmit = title.trim().length > 0 && !isPending && !templatesError
 
   const submit = async () => {
     if (!canSubmit) return
     try {
-      const created = await createTask({ title, type, content })
+      const created = await createTask({ title, type })
       toast.success('태스크를 만들었습니다', { description: 'Backlog에 추가되었습니다.' })
       onClose()
       onCreated?.(created)
-    } catch {
-      toast.error('태스크를 만들지 못했습니다', {
-        description: '네트워크를 확인하고 다시 시도해 주세요.',
-      })
+    } catch (error) {
+      toast.error('태스크를 만들지 못했습니다', { description: errorDescription(error) })
     }
   }
 
@@ -119,29 +102,14 @@ function CreateTaskForm({ onClose, onCreated }: CreateTaskFormProps) {
         <span className="text-muted text-[13px] font-medium">유형</span>
         <div role="radiogroup" aria-label="태스크 유형" className="grid grid-cols-4 gap-3">
           {TASK_TYPE_ORDER.map((item) => (
-            <TypeTile key={item} type={item} selected={item === type} onSelect={selectType} />
+            <TypeTile key={item} type={item} selected={item === type} onSelect={setType} />
           ))}
         </div>
-        {pendingType && (
-          <Callout
-            variant="info"
-            title={`작성한 내용이 ${TASK_TYPES[pendingType].label} 템플릿으로 바뀝니다`}
-          >
-            <div className="mt-1.5 flex gap-2">
-              <Button size="sm" variant="outline" onClick={() => applyType(pendingType)}>
-                바꾸기
-              </Button>
-              <Button size="sm" variant="ghost" onClick={() => setPendingType(null)}>
-                유지
-              </Button>
-            </div>
-          </Callout>
-        )}
       </div>
 
       <div className="flex flex-col gap-2">
         <div className="flex items-center justify-between">
-          <span className="text-muted text-[13px] font-medium">내용</span>
+          <span className="text-muted text-[13px] font-medium">섹션 미리보기</span>
           <span className="text-muted text-[12px]">
             {TASK_TYPES[type].label} 템플릿 · 예제 값은 <span className="font-mono">(예: …)</span>{' '}
             로 표시됩니다
@@ -155,20 +123,20 @@ function CreateTaskForm({ onClose, onCreated }: CreateTaskFormProps) {
               </Button>
             </div>
           </Callout>
-        ) : templatesLoading && content === '' ? (
+        ) : templatesLoading && sections.length === 0 ? (
           <div className="border-hairline bg-surface-soft text-muted flex min-h-[320px] items-center justify-center rounded-lg border text-[13px]">
             템플릿을 불러오는 중…
           </div>
         ) : (
-          <MarkerTextarea value={content} onChange={setDraft} minHeight={320} aria-label="내용" />
+          <TemplatePreview sections={sections} />
         )}
       </div>
 
       <div className="flex items-center justify-between pt-1">
         <span className="text-muted text-[13px]">
-          Backlog에 생성됩니다
+          Backlog에 생성됩니다 · 내용은 생성 후 상세 화면에서 편집합니다
           {markerCount > 0 &&
-            ` · 예제 텍스트 ${markerCount}건 남음 — 분석 시작 전에 실제 값으로 바꿔 주세요`}
+            ` · 예제 텍스트 ${markerCount}건은 분석 시작 전에 실제 값으로 바꿔 주세요`}
         </span>
         <div className="flex items-center gap-2">
           <Button variant="outline" className="h-10 px-4 text-[14px]" onClick={onClose}>
@@ -184,5 +152,31 @@ function CreateTaskForm({ onClose, onCreated }: CreateTaskFormProps) {
         </div>
       </div>
     </>
+  )
+}
+
+/** 선택한 유형의 섹션 템플릿 — 읽기 전용. 섹션 구성은 백엔드가 정한다. */
+function TemplatePreview({ sections }: { sections: TemplateSection[] }) {
+  return (
+    <div
+      role="region"
+      aria-label="섹션 미리보기"
+      className="border-hairline bg-surface-soft flex max-h-[320px] min-h-[160px] flex-col gap-5 overflow-y-auto rounded-lg border px-4 py-3.5"
+    >
+      {sections.length === 0 && (
+        <span className="text-muted text-[13px]">이 유형의 템플릿이 없습니다.</span>
+      )}
+      {sections.map((section) => (
+        <section key={`${section.displayOrder}-${section.name}`} className="flex flex-col gap-1">
+          <h3 className="text-ink text-[14px] leading-[1.4] font-medium">
+            {section.name}
+            {section.isRequired && (
+              <span className="text-muted ml-1.5 text-[12px] font-medium">필수</span>
+            )}
+          </h3>
+          <MarkdownDoc markdown={section.body} />
+        </section>
+      ))}
+    </div>
   )
 }

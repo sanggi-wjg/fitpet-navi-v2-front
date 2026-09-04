@@ -1,102 +1,68 @@
 import { describe, expect, it } from 'vitest'
 import type { ProposalResponseDto } from '@/api/model'
-import { parseSections } from '@/lib/markdown'
-import {
-  apiErrorInfo,
-  matchProposalSection,
-  proposalTargetLabel,
-  toChatOutcome,
-  toProposal,
-} from '@/lib/proposal-mapping'
+import { isProposalStale, toChatOutcome, toProposal } from '@/lib/proposal-mapping'
+import { makeProposal } from '@/test/factories'
 
 const base: ProposalResponseDto = {
   id: 11,
   task_id: 7,
+  section_id: 3,
+  section_version: 2,
   tool: 'replace_section',
+  tool_input: { section: '예외 조건', new_content: '- 휴면 계정 제외', reason: '이유' },
   status: 'PENDING',
-  task_version: 2,
-  reason: '이유',
-  section: '예외 조건',
-  field: null,
-  value: null,
+  is_stale: false,
   reject_reason: null,
   created_at: '2026-09-02T00:00:00',
+  updated_at: '2026-09-02T00:00:00',
 }
 
 describe('toProposal', () => {
   it('DTO 를 뷰 모델로 바꾸고 naive 시각은 UTC 로 본다', () => {
-    expect(toProposal(base)).toMatchObject({
+    expect(toProposal(base)).toEqual({
       id: 11,
-      tool: 'replace_section',
+      taskId: 7,
+      sectionId: 3,
+      sectionName: '예외 조건',
+      sectionVersion: 2,
+      newContent: '- 휴면 계정 제외',
+      reason: '이유',
       status: 'pending',
-      taskVersion: 2,
-      section: '예외 조건',
+      stale: false,
+      rejectReason: null,
       createdAt: '2026-09-02T00:00:00Z',
+      updatedAt: '2026-09-02T00:00:00Z',
     })
   })
-  it('no_change 는 제안이 아니다', () => {
+  it('no_change 이거나 본문이 없으면 제안이 아니다', () => {
     expect(toProposal({ ...base, tool: 'no_change' })).toBeNull()
+    expect(toProposal({ ...base, tool_input: { section: '예외 조건' } })).toBeNull()
+  })
+  it('CLOSED 는 closed', () => {
+    expect(toProposal({ ...base, status: 'CLOSED' })?.status).toBe('closed')
+  })
+  it('섹션명이 없으면 폴백 라벨', () => {
+    expect(toProposal({ ...base, tool_input: { new_content: 'x' } })?.sectionName).toBe('섹션')
   })
 })
 
 describe('toChatOutcome', () => {
-  it('no_change 는 message 만, 제안이면 proposal + diff', () => {
+  it('no_change 는 message 만, 제안이면 proposal', () => {
     expect(toChatOutcome({ tool: 'no_change', message: '지금으로 충분해요.' })).toEqual({
       message: '지금으로 충분해요.',
       proposal: null,
-      diff: [],
     })
-    const outcome = toChatOutcome({
-      tool: 'replace_section',
-      proposal: base,
-      diff: [
-        { type: 'insert', text: '- 추가' },
-        { type: 'changed', parts: [{ op: 'equal', text: 'a' }] },
-      ],
-    })
+    const outcome = toChatOutcome({ tool: 'replace_section', proposal: base, diff: '--- x' })
     expect(outcome.proposal?.id).toBe(11)
-    expect(outcome.diff).toEqual([
-      { type: 'insert', text: '- 추가', parts: [] },
-      { type: 'changed', text: '', parts: [{ op: 'equal', text: 'a' }] },
-    ])
+    expect(outcome.message).toBeNull()
   })
 })
 
-describe('matchProposalSection', () => {
-  const doc = parseSections('## 정책:\n- a\n\n## 예외 조건:\n- b\n')
-  it('콜론 없는 정규화 이름으로 섹션을 찾는다', () => {
-    expect(matchProposalSection(doc.sections, '예외 조건')?.name).toBe('예외 조건:')
-  })
-  it('없거나 중복이면 null', () => {
-    expect(matchProposalSection(doc.sections, '없는 섹션')).toBeNull()
-    const dup = parseSections('## 정책:\n- a\n\n## 정책:\n- b\n')
-    expect(matchProposalSection(dup.sections, '정책')).toBeNull()
-    expect(matchProposalSection(doc.sections, null)).toBeNull()
-  })
-})
-
-describe('apiErrorInfo', () => {
-  it('axios 오류에서 상태와 서버 메시지를 꺼낸다', () => {
-    const error = Object.assign(new Error('conflict'), {
-      isAxiosError: true,
-      response: { status: 409, data: { status: 409, message: '문서가 변경되었습니다' } },
-    })
-    expect(apiErrorInfo(error)).toEqual({ status: 409, message: '문서가 변경되었습니다' })
-  })
-  it('일반 오류·네트워크 단절은 null', () => {
-    expect(apiErrorInfo(new Error('x'))).toEqual({ status: null, message: null })
-    const offline = Object.assign(new Error('net'), { isAxiosError: true })
-    expect(apiErrorInfo(offline)).toEqual({ status: null, message: null })
-  })
-})
-
-describe('proposalTargetLabel', () => {
-  it('섹션명 또는 필드 라벨', () => {
-    expect(proposalTargetLabel({ ...toProposal(base)! })).toBe('예외 조건')
-    expect(
-      proposalTargetLabel(
-        toProposal({ ...base, tool: 'update_field', field: 'tags', section: null })!,
-      ),
-    ).toBe('태그')
+describe('isProposalStale', () => {
+  it('서버 플래그 · version 차이 · 409 문구 중 하나면 만료', () => {
+    expect(isProposalStale(makeProposal(), { version: 0 })).toBe(false)
+    expect(isProposalStale(makeProposal({ stale: true }), { version: 0 })).toBe(true)
+    expect(isProposalStale(makeProposal(), { version: 1 })).toBe(true)
+    expect(isProposalStale(makeProposal(), { version: 0 }, '충돌')).toBe(true)
   })
 })

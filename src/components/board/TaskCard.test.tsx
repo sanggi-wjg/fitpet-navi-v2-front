@@ -1,6 +1,6 @@
 import { DndContext } from '@dnd-kit/core'
 import { SortableContext } from '@dnd-kit/sortable'
-import { screen } from '@testing-library/react'
+import { screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
 import { SortableTaskCard, TaskCard } from '@/components/board/TaskCard'
@@ -14,6 +14,8 @@ const actions = (): TaskCardActions => ({
   onMove: vi.fn(),
   onChangePriority: vi.fn(),
   onCancel: vi.fn(),
+  onArchive: vi.fn(),
+  onUnarchive: vi.fn(),
 })
 
 describe('TaskCard', () => {
@@ -33,12 +35,7 @@ describe('TaskCard', () => {
   })
 
   it('마커가 남아 있으면 게이트 점 + 첫 실패 항목 문구', () => {
-    renderWithProviders(
-      <TaskCard
-        task={makeTask({ content: '## 정책:\n- (예: 금액) 지급 (예: 대상)\n' })}
-        actions={actions()}
-      />,
-    )
+    renderWithProviders(<TaskCard task={makeTask({ markerCount: 2 })} actions={actions()} />)
     expect(screen.getByText('마커 2건')).toBeInTheDocument()
     expect(screen.queryByText('개발 준비됨')).not.toBeInTheDocument()
   })
@@ -63,6 +60,47 @@ describe('TaskCard', () => {
     await user.click(screen.getByRole('button', { name: '태스크 메뉴' }))
     await user.click(await screen.findByRole('menuitem', { name: /태스크 취소/ }))
     expect(handlers.onCancel).toHaveBeenCalledWith(task)
+  })
+
+  it('kebab 메뉴에서 "아카이브"를 고르면 onArchive', async () => {
+    const user = userEvent.setup()
+    const handlers = actions()
+    const task = makeTask()
+    renderWithProviders(<TaskCard task={task} actions={handlers} />)
+    await user.click(screen.getByRole('button', { name: '태스크 메뉴' }))
+    await user.click(await screen.findByRole('menuitem', { name: /^아카이브$/ }))
+    expect(handlers.onArchive).toHaveBeenCalledWith(task)
+    expect(handlers.onCancel).not.toHaveBeenCalled()
+  })
+
+  it('아카이브된 카드는 상태 pill 을 보이고 메뉴는 상세 열기·아카이브 해제뿐', async () => {
+    const user = userEvent.setup()
+    const handlers = actions()
+    const task = makeTask({
+      status: 'canceled',
+      archived: true,
+      archivedAt: '2026-09-02T00:00:00Z',
+      readOnly: true,
+    })
+    renderWithProviders(<TaskCard task={task} actions={handlers} />)
+    expect(screen.getByText('취소')).toBeInTheDocument()
+    expect(screen.queryByText('분석 전')).not.toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: '태스크 메뉴' }))
+    const menu = await screen.findByRole('menu')
+    expect(
+      within(menu)
+        .getAllByRole('menuitem')
+        .map((item) => item.textContent),
+    ).toEqual(['상세 열기', '아카이브 해제'])
+    await user.click(within(menu).getByRole('menuitem', { name: '아카이브 해제' }))
+    expect(handlers.onUnarchive).toHaveBeenCalledWith(task)
+  })
+
+  it('완료 상태로 아카이브된 카드는 "완료" pill', () => {
+    renderWithProviders(
+      <TaskCard task={makeTask({ status: 'done', archived: true, readOnly: true })} />,
+    )
+    expect(screen.getByText('완료')).toBeInTheDocument()
   })
 
   it('overlay 카드는 메뉴가 없다', () => {

@@ -20,8 +20,11 @@
    DTO 는 `src/lib/api-mapping.ts` 에서 뷰 모델(`src/types/task.ts`)로 변환해서만 쓴다.
 2. **시각 표면은 `docs/DESIGN.md` 만 따른다.** `src/index.css` `@theme` 의 의미 클래스(`bg-canvas`, `text-muted`, `border-hairline`, `bg-success-wash text-success-deep` …)만 사용. hex·`bg-gray-*` 인라인 금지.
    `muted` 는 **텍스트 색**이다 — shadcn 생성물의 `bg-muted` / `text-muted-foreground` 는 `bg-surface-soft` / `text-muted` 로 치환한다.
-3. **템플릿·섹션 구조는 백엔드가 정본.** 헤딩은 `## 섹션명:` 형식이며 표시할 때만 `sectionDisplayName()` 으로 콜론을 뗀다.
-   프론트에 섹션명·"완료 조건" 을 하드코딩하지 않는다. 예제 마커 검사는 `(예:` 문자열 검색(`countMarkers`).
+3. **템플릿·섹션 구조는 백엔드가 정본.** 섹션은 `task_sections` 행(`name`·`body`·`display_order`·`is_required`·`version`)으로 오고,
+   프론트는 섹션을 만들거나 지우지 않고 `body` 만 `PATCH /tasks/{id}/sections/{section_id}` 로 바꾼다 (`version` 동봉, 불일치 409).
+   섹션명·"필수"·"완료 조건" 을 하드코딩하지 않는다(`is_required` 그대로 표시). 예제 마커 검사는 `(예:` 문자열 검색(`countMarkers`) 하나로
+   게이트·하이라이트·경고 목록이 같은 정의를 쓴다. 편집 본문의 `## ` 헤딩은 `findForbiddenHeading` 으로 저장 전에 차단한다.
+   제안(proposal)은 `section_id`·`section_version` 으로 섹션과 잇고, diff 는 서버 문자열이 아니라 `src/lib/diff.ts` 가 현재 본문 vs `tool_input.new_content` 로 계산한다.
 4. import 는 `@/*` alias 만. 상대경로(`../`) 금지.
 5. 코드 변경 후 `npm run lint && npm run typecheck && npm run test:run`, 마무리 시 `npm run build` 까지 통과해야 한다.
 

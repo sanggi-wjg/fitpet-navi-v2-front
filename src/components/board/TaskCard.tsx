@@ -2,6 +2,7 @@ import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { useNavigate } from 'react-router-dom'
 import { ReadyBadge } from '@/components/common/ReadyBadge'
+import { StatusPill } from '@/components/common/StatusPill'
 import { TagList } from '@/components/common/TagList'
 import { TypeChip } from '@/components/common/TypeChip'
 import { GateDots } from '@/components/board/GateDots'
@@ -22,7 +23,7 @@ interface TaskCardProps {
 
 /**
  * 보드 카드 — 표시만 담당한다. 드래그·클릭은 `SortableTaskCard` 가 감싼다.
- * 1행 유형 아이콘 + 제목 · 2행 게이트 · (태그) · 3행 id·우선순위 + 시각 (DESIGN.md D.3 `task-card`)
+ * 1행 유형 아이콘 + 제목 · 2행 게이트(아카이브면 상태 pill) · (태그) · 3행 id·우선순위 + 시각 (DESIGN.md D.3 `task-card`)
  */
 export function TaskCard({ task, actions, overlay = false }: TaskCardProps) {
   const gate = gateOf(task)
@@ -52,10 +53,16 @@ export function TaskCard({ task, actions, overlay = false }: TaskCardProps) {
           <TaskCardMenu task={task} actions={actions} />
         </div>
       )}
-      {!done && (
-        <div className="flex h-[22px] items-center">
-          {gate.passed ? <ReadyBadge /> : <GateDots gate={gate} />}
+      {task.archived ? (
+        <div className="flex h-6 items-center">
+          <StatusPill status={task.status} />
         </div>
+      ) : (
+        !done && (
+          <div className="flex h-[22px] items-center">
+            {gate.passed ? <ReadyBadge /> : <GateDots gate={gate} />}
+          </div>
+        )
       )}
       <TagList tags={task.tags} />
       <div className="text-muted flex items-center justify-between gap-2 text-[12px]">
@@ -70,7 +77,9 @@ export function TaskCard({ task, actions, overlay = false }: TaskCardProps) {
             </>
           )}
         </span>
-        <span className="shrink-0">{relativeTime(task.updatedAt)}</span>
+        <span className="shrink-0">
+          {relativeTime(task.archived && task.archivedAt ? task.archivedAt : task.updatedAt)}
+        </span>
       </div>
     </article>
   )
