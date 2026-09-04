@@ -4,8 +4,9 @@ dist-ssr
 node_modules
 coverage
 
-# 절대 규칙: orval 자동 생성 코드 (CLAUDE.md)
+# 절대 규칙: orval 자동 생성 코드 (CLAUDE.md) — 스냅샷도 curl 원본 그대로 둔다
 src/api
+openapi.json
 
 # Lock / minified
 package-lock.json
