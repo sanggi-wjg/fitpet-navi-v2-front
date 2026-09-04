@@ -798,20 +798,20 @@ colors-ext:
 
 **Navi 패널**
 
-| 컴포넌트                                  | 스펙                                                                                                                                                                                                                    |
-| ----------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `panel-header`                            | 48px, 코랄 점 + "Navi" 14/500 + 12 muted "요구사항 코칭"                                                                                                                                                                |
-| `panel-greeting` (첫 진입)                | Navi 첫 발화 말풍선(`navi-message` 스타일, bg canvas): "문서를 고치고 싶은 내용을 말해주세요. 저는 직접 수정하지 않고 변경안을 만들어 보여드려요. 수락하면 그때 문서에 반영돼요." — 빈 상태 카드 대신 대화로 시작       |
-| `suggestion-chips`                        | 입력창 위 추천 요청 3개: 32px pill · hairline · bg canvas · 12/500 body · 클릭 시 그대로 전송. 예: "예외 조건에 빠진 엣지케이스를 추가해줘" · busy 중엔 disabled                                                        |
-| `proposal-summary` (pending)              | hairline 카드 12: 코랄 점 + "Navi 제안" 13/500 `primary-text` + 대상 `code` 12 · 사유 13 body · 링크 "문서에서 보기 →" 13/500 `primary-text`. **diff·버튼 없음**                                                        |
-| `proposal-summary` (적용됨/거부됨/만료됨) | 한 줄: 회색 점 + "Navi 제안" muted + 대상 + 우측 `badge-pill`(적용됨·vN 초록 체크 / 거부됨 / 닫힘 / 만료됨 경고). 리로드 후 남은 대기 제안은 인사말 아래 12 muted "이전에 받은 제안이 문서에 남아 있습니다" + 요약 카드 |
-| `user-message`                            | 우측 정렬, bg `surface-card`, `{rounded.lg}`, 14 ink, 최대 300. 거부 사유는 "(제안 거부) 사유" 형태로 대화에 남는다                                                                                                     |
-| `navi-message`                            | 배경 없음, 14 body, **해요체**. `no_change` 는 이 형태로만(카드 없음)                                                                                                                                                   |
-| `navi-streaming`                          | teal 점 3개(8px, 투명도 1/.6/.3 순환) + 13 muted "Navi가 제안을 만들고 있습니다…". 입력창은 opacity .85 + 전송 버튼 자리에 `Square` 중단(`primary-text`)                                                                |
-| `navi-error`                              | bg `error-wash` `{rounded.lg}` · `error-deep`: 13/500 "제안을 만들지 못했습니다" + 13 사유(합니다체) + `button-ghost` 32 "다시 시도". 서버 검증 실패(재시도 1회 후)·타임아웃에 사용                                     |
-| `chat-input`                              | 하단 고정, bg canvas, hairline, `{rounded.lg}`, textarea 14 + 전송 원형 28(입력 있을 때 `primary-text`)                                                                                                                 |
-| 패널 스크롤                               | 최신 하단 고정, 새 메시지 도착 시 자동 스크롤(사용자가 위로 올린 상태면 유지 + "새 메시지" 칩)                                                                                                                          |
-| `activity-row`                            | 13: 시간(64px, muted) · 본문 · 버전 `code`. "**Navi 수정**(사유) → **사용자 승인**" 강조는 500 ink                                                                                                                      |
+| 컴포넌트                                  | 스펙                                                                                                                                                                                                                                 |
+| ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `panel-header`                            | 48px, 코랄 점 + "Navi" 14/500 + 12 muted "요구사항 코칭"                                                                                                                                                                             |
+| `panel-greeting` (첫 진입)                | Navi 첫 발화 말풍선(`navi-message` 스타일, bg canvas): "문서를 고치고 싶은 내용을 말해주세요. 저는 직접 수정하지 않고 변경안을 만들어 보여드려요. 수락하면 그때 문서에 반영돼요." — 빈 상태 카드 대신 대화로 시작                    |
+| `suggestion-chips`                        | 입력창 위 추천 요청 4개(예외 보강 · 미정 값 표시 · 섹션 간 불일치 · 전체 검토): 32px pill · hairline · bg canvas · 12/500 body · 클릭 시 그대로 전송. 예: "아직 정하지 않은 값(시점·금액·문구)을 찾아 표시해줘" · busy 중엔 disabled |
+| `proposal-summary` (pending)              | hairline 카드 12: 코랄 점 + "Navi 제안" 13/500 `primary-text` + 대상 `code` 12 · 사유 13 body · 링크 "문서에서 보기 →" 13/500 `primary-text`. **diff·버튼 없음**                                                                     |
+| `proposal-summary` (적용됨/거부됨/만료됨) | 한 줄: 회색 점 + "Navi 제안" muted + 대상 + 우측 `badge-pill`(적용됨·vN 초록 체크 / 거부됨 / 닫힘 / 만료됨 경고). 리로드 후 남은 대기 제안은 인사말 아래 12 muted "이전에 받은 제안이 문서에 남아 있습니다" + 요약 카드              |
+| `user-message`                            | 우측 정렬, bg `surface-card`, `{rounded.lg}`, 14 ink, 최대 300. 거부 사유는 "(제안 거부) 사유" 형태로 대화에 남는다                                                                                                                  |
+| `navi-message`                            | 배경 없음, 14 body, **해요체**. `no_change` 는 이 형태로만(카드 없음)                                                                                                                                                                |
+| `navi-streaming`                          | teal 점 3개(8px, 투명도 1/.6/.3 순환) + 13 muted "Navi가 제안을 만들고 있습니다…". 입력창은 opacity .85 + 전송 버튼 자리에 `Square` 중단(`primary-text`)                                                                             |
+| `navi-error`                              | bg `error-wash` `{rounded.lg}` · `error-deep`: 13/500 "제안을 만들지 못했습니다" + 13 사유(합니다체) + `button-ghost` 32 "다시 시도". 서버 검증 실패(재시도 1회 후)·타임아웃에 사용                                                  |
+| `chat-input`                              | 하단 고정, bg canvas, hairline, `{rounded.lg}`, textarea 14 + 전송 원형 28(입력 있을 때 `primary-text`)                                                                                                                              |
+| 패널 스크롤                               | 최신 하단 고정, 새 메시지 도착 시 자동 스크롤(사용자가 위로 올린 상태면 유지 + "새 메시지" 칩)                                                                                                                                       |
+| `activity-row`                            | 13: 시간(64px, muted) · 본문 · 버전 `code`. "**Navi 수정**(사유) → **사용자 승인**" 강조는 500 ink                                                                                                                                   |
 
 #### D.3 업무 보드 (범위 3) — `Board.dc.html`
 

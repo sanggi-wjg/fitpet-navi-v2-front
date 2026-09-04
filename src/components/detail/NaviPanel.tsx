@@ -12,9 +12,11 @@ import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import type { PanelMessage, Proposal } from '@/types/proposal'
 
+/** 추천 요청 — 백엔드 프롬프트가 다루는 축(예외 보강 · 미정 값 드러내기 · 섹션 간 불일치 · 전체 검토) 하나씩 */
 const SUGGESTIONS = [
   '예외 조건에 빠진 엣지케이스를 추가해줘',
-  '세부사항의 값을 항목 — 값 형태로 정리해줘',
+  '아직 정하지 않은 값(시점·금액·문구)을 찾아 표시해줘',
+  '섹션끼리 서로 어긋나는 내용이 있는지 확인해줘',
   '문서 전체를 검토하고 가장 먼저 고칠 곳을 제안해줘',
 ]
 
