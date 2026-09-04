@@ -22,9 +22,7 @@
     ],
     "deny": [
       "Edit(/src/api/**)",
-      "Edit(src/api/**)",
-      "Write(/src/api/**)",
-      "Write(src/api/**)"
+      "Edit(src/api/**)"
     ]
   },
   "hooks": {
