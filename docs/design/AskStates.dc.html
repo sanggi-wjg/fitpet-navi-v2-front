@@ -1,0 +1,149 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #f5f0e8; color: #141413; font-family: "Pretendard Variable", Pretendard, Inter, "Noto Sans KR", -apple-system, sans-serif; font-size: 14px; line-height: 1.55; -webkit-font-smoothing: antialiased; }
+    a { color: #994d35; text-decoration: none; } a:hover { text-decoration: underline; }
+    .i { width: 16px; height: 16px; flex: none; }
+    .mono { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+    button { font: inherit; cursor: pointer; }
+    .lbl { font-size: 12px; font-weight: 500; letter-spacing: 0.5px; color: #6c6a64; }
+    .step { display: flex; align-items: flex-start; gap: 10px; }
+    .step-icon { width: 16px; height: 16px; flex: none; margin-top: 2px; color: #6c6a64; }
+    .step-label { font-size: 13px; font-weight: 500; color: #3d3d3a; white-space: nowrap; }
+    .step-target { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12px; color: #6c6a64; }
+    .step-sub { font-size: 12px; color: #6c6a64; }
+    .code { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 13px; padding: 1px 5px; border-radius: 4px; background: #efe9de; color: #141413; }
+  </style>
+</helmet>
+<div style="display: flex; flex-direction: column; gap: 28px; width: 840px; height: 1320px; padding: 20px; overflow: hidden; background: #f5f0e8;">
+
+  <div style="display: flex; flex-direction: column; gap: 8px;">
+    <div class="lbl">단계 행 · 진행 중 / 완료 / 실패 / 대상 추가 / 설명 — 과정 블록은 항상 펼침, 도구 이름은 프론트 한국어 라벨</div>
+    <div style="display: flex; flex-direction: column; gap: 12px; padding: 12px 14px; background: #faf9f5; border: 1px solid #e6dfd8; border-radius: 12px;">
+      <div class="step">
+        <svg class="step-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>
+        <div style="display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0;"><span class="step-label">파일 읽기</span><span class="step-target">fitpetmall-backend-v4:mall/api/src/main/kotlin/com/fitpet/mall/api/service/order/OrderAmountCalculator.kt 40~110줄</span></div>
+        <span style="display: inline-flex; gap: 4px; margin-top: 6px;"><span style="width: 6px; height: 6px; border-radius: 9999px; background: #5db8a6;"></span><span style="width: 6px; height: 6px; border-radius: 9999px; background: #5db8a6; opacity: 0.6;"></span><span style="width: 6px; height: 6px; border-radius: 9999px; background: #5db8a6; opacity: 0.3;"></span></span>
+      </div>
+      <div class="step">
+        <svg class="step-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <div style="display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 0;"><div style="display: flex; align-items: center; gap: 8px;"><span class="step-label">코드 검색</span><span class="step-target">fitpetmall-backend-v4 'MileagePolicy'</span></div><span class="step-sub">fitpetmall-backend-v4 검색 'MileagePolicy' → 3건</span></div>
+        <svg class="i" style="width: 14px; height: 14px; margin-top: 3px; color: #27693b;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
+      </div>
+      <div class="step">
+        <svg class="step-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>
+        <div style="display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 0;"><div style="display: flex; align-items: center; gap: 8px;"><span class="step-label">파일 읽기</span><span class="step-target">fitpetmall-backend-v4:mall/api/src/main/kotlin/com/fitpet/mall/api/service/order/MileageRule.kt</span></div><span class="step-sub">read_file 오류: 파일이 아닙니다: mall/api/src/main/kotlin/com/fitpet/mall/api/service/order/MileageRule.kt</span></div>
+        <svg class="i" style="width: 14px; height: 14px; margin-top: 3px; color: #8e8b82;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+      </div>
+      <div class="step">
+        <svg class="step-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M13 8H7"/><path d="M17 12H7"/></svg>
+        <div style="display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 0;"><span class="step-label">설명</span><span class="step-note" style="color: #3d3d3a;">백엔드에서 한도 계산은 확인했어요. 화면에 어떻게 보이는지 프론트도 볼게요.</span></div>
+      </div>
+      <div class="step">
+        <svg class="step-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65"/><path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65"/></svg>
+        <div style="display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0;"><span class="step-label">대상 추가</span><span class="step-target">fitpetmall-frontend</span></div>
+        <svg class="i" style="width: 14px; height: 14px; margin-top: 3px; color: #27693b;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
+      </div>
+      <div class="step">
+        <svg class="step-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m6 14 1.5-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.54 6a2 2 0 0 1-1.95 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H18a2 2 0 0 1 2 2v2"/></svg>
+        <div style="display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 0;"><div style="display: flex; align-items: center; gap: 8px;"><span class="step-label">폴더 보기</span><span class="step-target">fitpetmall-frontend:apps/mall/src/components/domains/order2</span></div><span class="step-sub">fitpetmall-frontend:apps/mall/src/components/domains/order2 항목 9개</span></div>
+        <svg class="i" style="width: 14px; height: 14px; margin-top: 3px; color: #27693b;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
+      </div>
+    </div>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 8px;">
+    <div class="lbl">되묻기 · 대상을 판별하지 못한 경우 — 도구 호출 없이 answer 만 오므로 과정 블록 없는 일반 답변(해요체)</div>
+    <div style="display: flex; flex-direction: column; gap: 12px;">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span style="width: 8px; height: 8px; border-radius: 9999px; background: #cc785c; flex: none;"></span>
+        <span style="font-size: 13px; font-weight: 500; color: #994d35;">Navi</span>
+      </div>
+      <div style="padding: 0 2px; font-size: 14px; line-height: 1.7; color: #3d3d3a;">이 질문은 결제 전에 금액을 검증하는 커머스 백엔드와 화면에 금액을 보여 주는 몰 프론트 중 어느 쪽 코드를 보느냐에 따라 답이 달라요. 어느 기준으로 확인할까요?</div>
+      <div style="display: flex; justify-content: flex-end;">
+        <div style="max-width: 560px; padding: 10px 14px; border-radius: 12px; background: #efe9de; color: #141413; font-size: 14px; line-height: 1.55;">결제할 때 실제로 계산되는 기준으로요</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 8px;">
+    <div class="lbl">연결 중 · 첫 이벤트가 오기 전</div>
+    <div style="display: flex; align-items: center; gap: 10px; padding: 4px 4px;">
+      <span style="display: inline-flex; gap: 5px;">
+        <span style="width: 8px; height: 8px; border-radius: 9999px; background: #5db8a6;"></span>
+        <span style="width: 8px; height: 8px; border-radius: 9999px; background: #5db8a6; opacity: 0.6;"></span>
+        <span style="width: 8px; height: 8px; border-radius: 9999px; background: #5db8a6; opacity: 0.3;"></span>
+      </span>
+      <span style="font-size: 13px; color: #6c6a64;">코드베이스에 연결하는 중…</span>
+    </div>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 8px;">
+    <div class="lbl">중단됨 · 받은 내용은 유지, 중립 pill</div>
+    <div style="display: flex; flex-direction: column; gap: 12px;">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span style="width: 8px; height: 8px; border-radius: 9999px; background: #cc785c; flex: none;"></span>
+        <span style="font-size: 13px; font-weight: 500; color: #994d35;">Navi</span>
+        <span style="display: inline-flex; align-items: center; gap: 4px; height: 22px; padding: 0 8px 0 6px; border-radius: 9999px; background: #efe9de; color: #6c6a64; font-size: 12px; font-weight: 500;">
+          <svg class="i" style="width: 10px; height: 10px;" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12" rx="1"/></svg>
+          <span>중단됨</span>
+        </span>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 12px; padding: 12px 14px; background: #faf9f5; border: 1px solid #e6dfd8; border-radius: 12px;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span class="lbl">탐색 과정 · 3단계 · 중단</span>
+          <span style="flex: 1;"></span>
+          <span class="mono" style="font-size: 12px; color: #6c6a64;">17초</span>
+        </div>
+        <div class="step">
+          <svg class="step-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>
+          <div style="display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0;">
+            <span class="step-label">파일 읽기</span>
+            <span class="step-target">fitpetmall-backend-v4:mall/api/src/main/kotlin/com/fitpet/mall/api/service/order/OrderAmountCalculator.kt 110~180줄</span>
+          </div>
+          <svg class="i" style="width: 14px; height: 14px; margin-top: 3px; color: #8e8b82;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </div>
+      </div>
+      <div style="padding: 0 2px; font-size: 14px; line-height: 1.7; color: #3d3d3a;">쿠폰은 기준 금액을 계산하기 전에 먼저 차감돼요. 상품 쿠폰과 장바구니 쿠폰을 모두 뺀 뒤에</div>
+      <div style="padding: 0 2px; font-size: 12px; color: #6c6a64;">여기까지 받은 답변만 표시합니다</div>
+    </div>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 8px;">
+    <div class="lbl">오류 · error 이벤트 503(LLM 불가 · 탐색 40회 한도) — 다시 시도 노출, 500 은 메시지만</div>
+    <div style="display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px; background: #f4e3e0; border-radius: 12px; color: #a53a3a;">
+      <svg class="i" style="width: 16px; height: 16px; margin-top: 2px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
+      <div style="display: flex; flex-direction: column; gap: 6px; flex: 1;">
+        <div style="font-size: 13px; font-weight: 500; line-height: 1.45;">답변을 받지 못했습니다</div>
+        <div style="font-size: 13px; line-height: 1.45;">LLM을 사용할 수 없습니다. 잠시 후 다시 시도해주세요.</div>
+        <button type="button" style="display: inline-flex; align-items: center; gap: 6px; align-self: flex-start; height: 32px; padding: 0 10px; border: 0; border-radius: 8px; background: transparent; color: #a53a3a; font-size: 13px; font-weight: 500;">
+          <svg class="i" style="width: 13px; height: 13px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>
+          <span>다시 시도</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 8px;">
+    <div class="lbl">답변 안 코드 표기 · 인라인 코드는 surface-card, 블록은 다크 표면(파일명 헤더는 보류) · 답변 끝 "근거" 목록은 백엔드 프롬프트가 강제</div>
+    <div style="display: flex; flex-direction: column; gap: 12px; padding: 0 2px; font-size: 14px; line-height: 1.7; color: #3d3d3a;">
+      <p style="margin: 0;">비율은 코드 상수가 아니라 정책 엔티티 <span class="code">MileagePolicyEntity.usableRatio</span> 값이에요. 실제 수치는 어드민에서 확인해야 해요.</p>
+      <pre class="mono" style="margin: 0; padding: 12px 14px; border-radius: 8px; background: #181715; font-size: 13px; line-height: 1.6; color: #faf9f5; white-space: pre; overflow-x: auto;">val limit = (base * policy.usableRatio).setScale(0, RoundingMode.DOWN)</pre>
+      <p style="margin: 0;"><strong style="font-weight: 600; color: #141413;">근거</strong></p>
+      <ul style="margin: 0; padding-left: 20px;"><li><span class="code">fitpetmall-backend-v4/mall/api/src/main/kotlin/com/fitpet/mall/api/service/order/MileagePolicyService.kt:88</span> — 기준 금액에 정책 비율을 곱해 사용 한도를 계산</li></ul>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+</body>
+</html>

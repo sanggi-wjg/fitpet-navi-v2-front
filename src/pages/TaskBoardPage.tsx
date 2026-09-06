@@ -10,6 +10,7 @@ import type { TaskCardActions } from '@/components/board/TaskCardMenu'
 import { TodoMoveWarningDialog } from '@/components/board/TodoMoveWarningDialog'
 import { Callout } from '@/components/common/Callout'
 import { Topbar } from '@/components/layout/Topbar'
+import { TopbarTabs } from '@/components/layout/TopbarTabs'
 import { TaskCreateDialog } from '@/components/task/TaskCreateDialog'
 import { Button } from '@/components/ui/button'
 import {
@@ -186,7 +187,7 @@ export function TaskBoardPage() {
   return (
     <>
       <Topbar
-        left={<span className="bg-surface-card text-ink rounded-md px-2.5 py-1.5">업무 보드</span>}
+        left={<TopbarTabs />}
         right={
           <>
             <label className="border-hairline bg-surface-soft text-muted focus-within:border-primary flex h-9 w-44 items-center gap-2 rounded-md border px-3 text-[14px] xl:w-60">

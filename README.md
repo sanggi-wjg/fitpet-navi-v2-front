@@ -35,7 +35,7 @@ npm run dev                   # https://localhost:5173 (자체 서명 인증서 
 ```
 src/
   api/            orval 생성물 (커밋 대상, 직접 수정 금지)
-  types/          프론트 뷰 모델 (task.ts — Task · TaskSection / proposal.ts — Proposal · PanelMessage)
+  types/          프론트 뷰 모델 (task.ts — Task · TaskSection / proposal.ts — Proposal · PanelMessage / ask.ts — AskTurn · AskStep)
   lib/
     api-mapping.ts  DTO ↔ 뷰 모델, enum 매핑, 태그(쉼표 문자열↔배열)·우선순위
     markdown.ts     (예: 마커 검사/분할 · 편집 본문의 `## ` 헤딩 차단
@@ -46,21 +46,29 @@ src/
     gate.ts         개발 준비 게이트 계산과 문구
     board-order.ts  컬럼별 카드 순서 — 드래그 중 이동 계산, 숨은 카드 병합
     task-config.ts  유형/컬럼/우선순위 설정
+    ask-stream.ts   구현 확인 SSE 리더 (fetch + ReadableStream · 프레임 파서 · 이벤트 디코더 · AskRequestError)
+    ask-reducer.ts  구현 확인 이벤트 → 턴 뷰 모델 (대상 행 합성 · note 행 · 도구 라벨/target · 이력 구성)
+    ask-config.ts   구현 확인 예시 질문 (카테고리 6개 × 문항 2~3개)
+    keyboard.ts     채팅 입력 Enter 판정 (Shift+Enter · IME 조합 가드)
   hooks/
     useTasks.ts      orval 훅 래퍼 (템플릿 · 목록+아카이브 · 상세 · 생성 · 이동+순서 · 상태 · 메타 · 아카이브/해제 · 섹션 저장)
     useProposals.ts  제안 목록 + Navi 세션 (채팅 · 수락 · 거부→재제안 · 만료 · 중단)
+    useAskSession.ts 구현 확인 세션 (스트림 전송 · 중단 · 재시도 · 새 대화 — 세션 로컬)
+    useElapsed.ts · useStickToBottom.ts  진행 중 경과 초 · 창 스크롤을 대화 끝에 붙이기
   components/
     ui/           shadcn(base-nova) 생성물 — DESIGN.md 토큰으로 치환됨 (dropdown-menu · popover · skeleton 포함)
-    common/       TypeChip · ReadyBadge · Callout · MarkdownDoc · MarkerTextarea · TagList · PriorityMenu · TagsEditor …
+    common/       TypeChip · ReadyBadge · Callout · MarkdownDoc(doc/chat) · BusyDots · MarkerTextarea · TagList · PriorityMenu · TagsEditor …
     board/        KanbanBoard · KanbanColumn · ArchiveList · TaskCard(+Sortable) · TaskCardMenu · CancelTaskDialog · TodoMoveWarningDialog · BoardSkeleton
     task/         TaskCreateDialog · TypeTile
     detail/       TaskHeader · GateStrip · DocumentSection · ProposalBlock · DiffView · NaviPanel · AnalyzeWarningDialog · UndecidedSection · DetailSkeleton …
-    layout/       AppLayout · Topbar
-  pages/          TaskBoardPage (/board) · TaskDetailPage (/tasks/:id)
+    ask/          AskEmptyState · AskInput · AskTurnView · AskProcess · AskStepRow · AskMeta
+    layout/       AppLayout · Topbar · TopbarTabs
+  pages/          TaskBoardPage (/board) · TaskDetailPage (/tasks/:id) · AskPage (/ask)
   test/           Vitest setup(jsdom 폴리필) · factories · renderWithProviders · queryWrapper(훅 테스트용 QueryClient)
 docs/
   DESIGN.md       디자인 시스템 (getdesign Claude 원문 + Navi v2 적용 가이드)
   design/         Claude Design 캔버스 아트보드 소스 (*.dc.html, canvas.json)
+  ask-stream-contract.md  구현 확인(코드 질의 채팅) code-qa 스트림 명세와 프론트 표시 규칙
 ```
 
 ### 문서 모델
@@ -79,18 +87,30 @@ docs/
 - 거부 `POST /proposals/{id}/reject` `{ reason }` 는 거부 저장과 재제안이 한 트랜잭션이라 같은 응답으로 새 제안(또는 `no_change`)이 돌아옵니다. 503 이면 거부도 롤백되어 제안이 pending 으로 남습니다.
 - 대화는 서버에 저장되지 않습니다(세션 로컬). 리로드 후 대기 제안은 패널 상단 요약 카드와 문서의 블록으로만 보입니다.
 
+### 구현 확인 (코드 질의 채팅)
+
+비개발자가 "지금 구현이 어떻게 되어 있나"를 채팅으로 묻는 독립 탭(`/ask`). 명세와 표시 규칙은 [`docs/ask-stream-contract.md`](docs/ask-stream-contract.md).
+
+- `POST /api/v1/code-qa/chat` `{ messages[] }` → SSE(`thinking · tool_call · tool_result · answer · done · error`). orval 은 스트림을 만들지 못해 **`src/lib/ask-stream.ts` 가 fetch + ReadableStream 으로 직접 읽고**, 생성물은 요청 DTO 타입(`CodeQaMessageDto`)만 씁니다.
+- 대화는 세션 로컬입니다. 후속 질문은 완료된 턴의 [질문, 최종 답변] 쌍(최근 20턴)을 `messages` 로 동봉합니다. 중단·오류 턴은 제외합니다.
+- 대상 레포는 백엔드 LLM 이 고릅니다. 프론트는 첫 `tool_call.arguments.repo` 로 "대상 선택" 행을 합성하고, 도구 이름을 한국어 라벨로 바꾸며, 도구 호출 사이에 온 `answer` 는 과정 블록의 "설명" 행으로 옮깁니다(`src/lib/ask-reducer.ts`).
+- 중단은 AbortController(받은 내용 유지), 종결 이벤트 없는 EOF 는 재시도 가능한 오류로 봅니다. 재시도는 503·네트워크 오류에만 노출됩니다.
+- 빈 상태의 예시 질문은 `src/lib/ask-config.ts` 가 정본입니다(카테고리 6개 × 문항 2~3개, 카테고리 탭으로 접어 보임). 문항을 바꾸면 `docs/DESIGN.md` §D.4 `ask-suggestions` 와 목업 `docs/design/AskEmpty.dc.html` 도 함께 갱신합니다.
+
 ## 백엔드 연동
 
 - 클라이언트는 orval 이 스냅샷 `openapi.json` 에서 생성합니다. `npm run generate:api` 가 `http://localhost:9000/openapi.json` 을 먼저 받아 스냅샷을 갱신합니다 (`orval.config.ts`, axios mutator `src/lib/axios-instance.ts`).
-- 현재 백엔드: 태스크(템플릿 · 목록 · 생성 · 조회 · 메타 수정 · 순서 변경 · 아카이브/해제) + 섹션 수정 + 제안(채팅 · 목록 · 수락 · 거부 · 닫기). 분석·미결정 사항 API 는 아직 없습니다.
+- 현재 백엔드: 태스크(템플릿 · 목록 · 생성 · 조회 · 메타 수정 · 순서 변경 · 아카이브/해제) + 섹션 수정 + 제안(채팅 · 목록 · 수락 · 거부 · 닫기) + 코드 Q&A(`code-qa/chat` 스트림). 분석·미결정 사항 API 는 아직 없습니다.
 - 보드 순서: `display_order` 는 **컬럼 안에서만** 비교합니다. 카드를 놓으면 (상태가 바뀌었을 때) `PATCH /tasks/{id}` 후 놓인 컬럼의 전체 id 순서를 `PATCH /tasks/reorder` 로 보냅니다.
 - 요청 사항
   1. 예제 마커 정의 통일 — 백엔드 `EXAMPLE_MARKER` 가 `"예:"` 라 `example_marker_count` 가 프론트의 `(예:` 검색과 어긋날 수 있습니다. `"(예:"` 로 맞추면 프론트가 그 값을 그대로 쓸 수 있습니다.
   2. 분석 실행 · 미결정 사항 엔드포인트 — 범위 3 구현에 필요합니다.
   3. 생성 시 섹션 본문(`sections?: [{name, body}]`)을 받으면 생성 다이얼로그에서 바로 편집할 수 있습니다(지금은 템플릿 미리보기만).
+  4. 코드 Q&A 스트림 — 15초 간격 `: ping` 주석(프록시 idle timeout), `tool_result.ok` 필드(실패 판정), 레포 표시명(`docs/ask-stream-contract.md` §6).
 
 ## 디자인
 
 - 토큰·타이포·컴포넌트 규칙: [`docs/DESIGN.md`](docs/DESIGN.md) (§E 에 Tailwind `@theme` 매핑)
 - 화면 목업: [Claude Design 캔버스](https://claude.ai/code/artifact/7cc77e35-2c68-47c5-b758-227efe4d5c75) — 소스는 `docs/design/`. 목업을 바꿀 때는 `*.dc.html` 과 `canvas.json` 을 수정한 뒤 캔버스를 다시 저장합니다.
+- 새 화면 추가 절차: `DESIGN.md` §A 결정 표에 행 추가 → `docs/design/` 아트보드 + `canvas.json` → 캔버스 재저장 → §D 컴포넌트 스펙 → 구현. 백엔드 의존 화면은 계약 문서(`docs/ask-stream-contract.md` 형식)를 먼저 쓴다.
 - 서체: Pretendard(UI) · Noto Serif KR(페이지 타이틀) · JetBrains Mono(코드) — npm 패키지로 self-host.

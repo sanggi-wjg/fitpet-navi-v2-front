@@ -1,5 +1,15 @@
 import { describe, expect, it } from 'vitest'
-import { relativeTime } from '@/lib/format'
+import { formatElapsed, relativeTime } from '@/lib/format'
+
+describe('formatElapsed', () => {
+  it('10초 미만은 소수 1자리, 1분 미만은 초, 그 이상은 분·초', () => {
+    expect(formatElapsed(8800)).toBe('8.8초')
+    expect(formatElapsed(0)).toBe('0.0초')
+    expect(formatElapsed(42_300)).toBe('42초')
+    expect(formatElapsed(72_000)).toBe('1분 12초')
+    expect(formatElapsed(-5)).toBe('0.0초')
+  })
+})
 
 describe('relativeTime', () => {
   it('잘못된 날짜는 예외 없이 —', () => {

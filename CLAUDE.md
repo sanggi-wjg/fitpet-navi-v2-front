@@ -18,6 +18,8 @@
 
 1. **`src/api/` 는 orval 생성물 — 직접 수정 금지.** API 를 바꾸려면 백엔드 스펙을 고치고 `npm run generate:api`.
    DTO 는 `src/lib/api-mapping.ts` 에서 뷰 모델(`src/types/task.ts`)로 변환해서만 쓴다.
+   예외: 구현 확인의 code-qa 스트림은 orval 이 훅을 만들지 못해 `src/lib/ask-stream.ts` 가 fetch 로 직접 읽되, 생성 DTO **타입**(`CodeQaMessageDto` 등)만 쓴다.
+   빈 상태 예시 질문의 정본은 `src/lib/ask-config.ts` — 문항을 바꾸면 `docs/DESIGN.md` §D.4 와 `docs/design/AskEmpty.dc.html` 도 함께 고친다.
 2. **시각 표면은 `docs/DESIGN.md` 만 따른다.** `src/index.css` `@theme` 의 의미 클래스(`bg-canvas`, `text-muted`, `border-hairline`, `bg-success-wash text-success-deep` …)만 사용. hex·`bg-gray-*` 인라인 금지.
    `muted` 는 **텍스트 색**이다 — shadcn 생성물의 `bg-muted` / `text-muted-foreground` 는 `bg-surface-soft` / `text-muted` 로 치환한다.
 3. **템플릿·섹션 구조는 백엔드가 정본.** 섹션은 `task_sections` 행(`name`·`body`·`display_order`·`is_required`·`version`)으로 오고,

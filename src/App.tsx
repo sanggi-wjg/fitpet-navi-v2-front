@@ -3,6 +3,7 @@ import { Navigate, RouterProvider, createBrowserRouter } from 'react-router-dom'
 import { RouteError } from '@/components/common/RouteError'
 import { AppLayout } from '@/components/layout/AppLayout'
 import { Toaster } from '@/components/ui/sonner'
+import { AskPage } from '@/pages/AskPage'
 import { TaskBoardPage } from '@/pages/TaskBoardPage'
 import { TaskDetailPage } from '@/pages/TaskDetailPage'
 
@@ -17,6 +18,7 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <Navigate to="/board" replace /> },
       { path: 'board', element: <TaskBoardPage /> },
+      { path: 'ask', element: <AskPage /> },
       { path: 'tasks/:taskId', element: <TaskDetailPage /> },
     ],
   },

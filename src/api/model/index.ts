@@ -7,6 +7,9 @@
 
 export * from './chatRequestDto';
 export * from './chatResponseDto';
+export * from './codeQaChatRequestDto';
+export * from './codeQaMessageDto';
+export * from './codeQaMessageDtoRole';
 export * from './errorResponseDto';
 export * from './healthResponseDto';
 export * from './hTTPValidationError';

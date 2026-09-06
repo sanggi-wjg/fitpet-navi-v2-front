@@ -230,4 +230,35 @@
   .prose-doc h4 {
     line-height: 1.5;
   }
+  /* preflight 가 지운 번호 목록 표시 복구 */
+  .prose-doc ol {
+    margin: 0;
+    padding-left: 18px;
+    list-style: decimal;
+  }
+  .prose-doc p + ol,
+  .prose-doc ol + p {
+    margin-top: 8px;
+  }
+
+  /* 구현 확인 답변 (DESIGN.md D.4 `ask-answer`) — 14 / 1.7, 강조 600, 인라인 코드는 surface-card */
+  .prose-chat {
+    font-size: 14px;
+  }
+  .prose-chat strong {
+    font-weight: 600;
+  }
+  .prose-chat code {
+    font-size: 13px;
+    background: var(--color-surface-card);
+  }
+  .prose-chat li + li {
+    margin-top: 4px;
+  }
+  .prose-chat pre,
+  .prose-chat pre + p,
+  .prose-chat pre + ul,
+  .prose-chat pre + ol {
+    margin-top: 12px;
+  }
 }

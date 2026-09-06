@@ -9,6 +9,7 @@ import {
 } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { Button } from '@/components/ui/button'
+import { isSubmitEnter } from '@/lib/keyboard'
 import { cn } from '@/lib/utils'
 import type { PanelMessage, Proposal } from '@/types/proposal'
 
@@ -296,7 +297,7 @@ function PanelInput({
               value={draft}
               onChange={(event) => setDraft(event.target.value)}
               onKeyDown={(event) => {
-                if (event.key === 'Enter' && !event.shiftKey && !event.nativeEvent.isComposing) {
+                if (isSubmitEnter(event)) {
                   event.preventDefault()
                   submit()
                 }

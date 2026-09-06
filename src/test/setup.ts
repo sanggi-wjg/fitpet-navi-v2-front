@@ -18,3 +18,5 @@ if (!('ResizeObserver' in globalThis)) {
 if (!Element.prototype.scrollIntoView) {
   Element.prototype.scrollIntoView = () => {}
 }
+// 창 스크롤(구현 확인 자동 스크롤) — jsdom 은 not implemented 경고만 남긴다
+window.scrollTo = () => {}
